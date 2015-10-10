@@ -107,7 +107,7 @@ char radioTemp[4];
 char recvFreq[8], xmitFreq[8], oldFreq[8];
 char squelchLevel[2] = " ";
 char temp[17];
-char toneMode[2] = " ";
+char toneMode[5];
 char UV3buff[32];
 char UV3volume[3];
 
@@ -240,7 +240,6 @@ void setup(){
   lcd.setCursor(0,2);
   lcd.print("10/09/2015  Rel 1.0");
   delay(3000);
-  lcd.clear();
 
 /******************************************
  *  get the UV-RS3 Info
@@ -251,17 +250,7 @@ Serial.println("Setup code");
 
   memoryChannel[0] = '0';
   memoryChannel[1] = '\0';
-/*
-  UV3A.write('\r');
-  UV3A.print("RC");
-  UV3A.write(memoryChannel);
-  UV3A.write('\r');
-  UV3B.write('\r');
-  UV3B.print("RC");
-  UV3B.write(memoryChannel);
-  UV3B.write('\r');
-//  memoryChannel[0] = '1';
-*/
+  lcd.clear();
   getConfiginfo();
   printFreq();
 #ifdef DEBUG  

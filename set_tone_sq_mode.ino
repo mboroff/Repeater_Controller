@@ -16,15 +16,19 @@ void setToneMode()
   lcd.print("Tone Sqlch Mode");
   getTonemode();
   printTonemode();
+  lcd.setCursor(0, 3);
+  lcd.print("Enter new value");
   menuSwitch = 0;                            // esure the loop runs
 
   while (menuSwitch == 0){
 
       key = keypad.getKey();               // see if a key has been pressed
       if (key) {
+
           if (buzzerEnabled == true){
               beep();                    
               }
+ 
           if (key == '#') {               // cancel key
               lcd.clear();
               menuSwitch = 1;
@@ -36,24 +40,23 @@ void setToneMode()
                   menuSwitch = 1;
                   break;
                   }
-          else {               
-                if (key == '0' || key == '1' || key == '2' ) {
+          else if (key == '0' || key == '1' || key == '2') {
                    toneMode[0] = key;
                    toneMode[1] = '\0';
                    lcd.setCursor(12, 2);
                    lcd.print(key);
-                } else {
-                    lcd.setCursor(0, 3);
-                    lcd.print("Invalid tone value");
-                    delay2k();
-                    lcd.setCursor(0, 3);
-                    lcd.print("                  ");
-                    }
-              }
-          }
-    }
+                   }  else {         
+                            lcd.setCursor(12, 2);
+                            lcd.print(key);
+                            lcd.setCursor(0, 3);
+                            lcd.print("Invalid tone value");
+                            delay2k();
+                            lcd.setCursor(0, 3);
+                            lcd.print("                  ");
+                            }
+      }
+  }
 }
-
 /*******************************************
  * Print Tone Mode
 ********************************************/
@@ -73,7 +76,7 @@ void getTonemode()
 #ifdef DEBUGTM
  Serial.println("Getting tone mode");
 #endif  
-  sendReadcmd("TF?\r");
+  sendReadcmd("TM?\r");
   get_UV3buff();
   toneMode[0] =  UV3buff[4];
 #ifdef DEBUGTM
