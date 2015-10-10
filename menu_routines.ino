@@ -152,6 +152,10 @@ void processMenu()
           case 11:           // Display System Info
           get_repeater_info();
           break;
+
+          case 12:          // Reset RS-UV3
+          reset_RS_UV3();
+          break;
           
          default:
            break;   

@@ -135,7 +135,7 @@ String volumeStr;
 /***********************************
  *    Function menu titles
 ***********************************/
-#define MAXFUNCTIONS 11 
+#define MAXFUNCTIONS 12
 #define MAXITEMSIZE 20
 char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] = 
        { "Set Rx Freq        ", "Set Tx Freq        ", 
@@ -143,7 +143,7 @@ char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] =
          "Set CTCSS          ", "Repeater ON/OFF    ", 
          "BEEP ON/OFF        ", "Fan ON/OFF         ",
          "Set Clock          ", "Set Volume         ",        
-         "Display System Info"
+         "Display System Info", "Reset RS-UV3       "
          };
 #define NUMBEROFTONES 50
 #define SIZEOFTONE 6
