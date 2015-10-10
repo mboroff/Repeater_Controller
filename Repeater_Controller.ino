@@ -234,8 +234,10 @@ void setup(){
 #ifdef DEBUG
 Serial.println("Setup code");
 #endif
+
   memoryChannel[0] = '0';
   memoryChannel[1] = '\0';
+/*
   UV3A.write('\r');
   UV3A.print("RC");
   UV3A.write(memoryChannel);
@@ -245,7 +247,7 @@ Serial.println("Setup code");
   UV3B.write(memoryChannel);
   UV3B.write('\r');
 //  memoryChannel[0] = '1';
-
+*/
   getConfiginfo();
   printFreq();
 #ifdef DEBUG  
