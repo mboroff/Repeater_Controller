@@ -118,7 +118,7 @@ void sendVolume()
 
    lcd.setCursor(0, 3);
    lcd.print("Volume Saved");
-   delay(2000);
+   delay2k();
 
 }
 

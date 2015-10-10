@@ -109,7 +109,7 @@ void sendCTCCS()
 
    lcd.setCursor(0, 3);
    lcd.print("CTCCS Freq Saved");
-   delay(2000);
+   delay2k();
 }
 
 

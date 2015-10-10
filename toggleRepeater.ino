@@ -42,7 +42,7 @@ void toggleRepeater()
                               lcd.print("Repeater OFF saved ");
                               }
                   menuSwitch = 1;
-                  delay(2000);
+                  delay2k();
                   break;
                   }
           else if (key == 'A' ) {              // increment squelch value

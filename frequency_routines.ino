@@ -36,7 +36,7 @@ Serial.println("Entring frequency menu");
         if (key == '*') {             // confirmation key not allowed
             lcd.setCursor(0, 3);
             lcd.print("All digits required");
-            delay(2000);
+            delay2k();
             lcd.setCursor(0, 3);
             lcd.print("                   ");
             } 
@@ -70,7 +70,7 @@ Serial.println("Entring frequency menu");
                              lcd.setCursor(0, 3);
                              lcd.print("Freq out of band");
                              strcpy(recvFreq,oldFreq);
-                             delay(2000);
+                             delay2k();
                              menuSwitch = 1;
                              break;
                              }
@@ -78,7 +78,7 @@ Serial.println("Entring frequency menu");
                                     if (buzzerEnabled == true){
                                         beep();                    
                                         }
-                                    delay(200);
+                                    delay200();
                                     if (buzzerEnabled == true){
                                         beep();                    
                                         }
@@ -96,7 +96,7 @@ Serial.println("Entring frequency menu");
                                             UV3A.write(UV3buff);
                                             UV3A.write("000");              // freq is stored in kHz
                                             UV3A.write('\r');
-                                            delay(200);
+                                            delay200();
                                             UV3A.flush();
                                             UV3A.print("ST");
                                             UV3A.write(memoryChannel);
@@ -107,7 +107,7 @@ Serial.println("Entring frequency menu");
                                                     UV3B.write(UV3buff);
                                                     UV3B.write("000");         // freq is stored in kHz
                                                     UV3B.write('\r');
-                                                    delay(200);
+                                                    delay200();
                                                     UV3B.flush();
                                                     UV3B.print("ST");
                                                     UV3B.write(memoryChannel);
@@ -126,7 +126,7 @@ Serial.println("Entring frequency menu");
                                                     UV3A.write(UV3buff);
                                                     UV3A.write("000");
                                                     UV3A.write('\r');
-                                                    delay(200);
+                                                    delay200();
                                                     UV3A.flush();
                                                     UV3A.print("ST");
                                                     UV3A.write(memoryChannel);
@@ -137,16 +137,16 @@ Serial.println("Entring frequency menu");
                                                              UV3B.write(UV3buff);
                                                              UV3B.write("000");
                                                              UV3B.write('\r');
-                                                             delay(200);
+                                                             delay200();
                                                              UV3B.flush();
                                                              UV3B.print("ST");
                                                              UV3B.write(memoryChannel);
                                                              UV3B.write('\r');
                                                              }                                      }
-                                               delay(200);
+                                               delay200();
                                                lcd.setCursor(0, 3);
                                                lcd.print("Freq saved");
-                                               delay(2000);
+                                               delay2k();
                                                menuSwitch = 1;
                                                break;
                                   }                                    // end of in band
@@ -259,9 +259,11 @@ Serial.println("showFreq");
 
 int DoRangeCheck()
 {
-#ifdef DEBUG  
+//#ifdef DEBUG  
+  Serial.println("Do range check");
   Serial.print("current freq = "); Serial.println(currentFrequency);
-#endif  
+//#endif  
+
   if (currentFrequency >= TWOMLOWERFREQUENCYLIMIT && currentFrequency <= TWOMUPPERFREQUENCYLIMIT) {
       return FREQINBAND;
       } 

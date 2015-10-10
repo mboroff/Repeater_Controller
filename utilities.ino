@@ -86,7 +86,7 @@ void getradioTemp()
      UV3B.write('\r');
      UV3B.print("TP\r");
  }
- delay(200);
+ delay200();
   get_UV3buff();
   for (int i = 0; i < 3; i++) {
        radioTemp[i] = UV3buff[6 + i];
@@ -116,12 +116,12 @@ void sendReadcmd(char* cmd)
       UV3A.write('\r');
       UV3A.flush();
       UV3A.print(cmd);
-      delay(200);
+      delay200();
       } else {
               UV3B.write('\r');
               UV3B.flush();
               UV3B.print(cmd);
-              delay(200);
+              delay200();
               }
 }
 
@@ -139,20 +139,64 @@ void sendReadcmd(char* cmd)
      UV3A.print(cmd);
      UV3A.write(data);
      UV3A.write('\r');
-     delay(200);
+     delay200();
      UV3A.print("ST0");
      UV3A.write('\r');
-     delay(200);
+     delay200();
      } else { 
              UV3B.write('\r');
              UV3B.flush();
              UV3B.print(cmd);
              UV3B.write(data);
              UV3B.write('\r');
-             delay(200);
+             delay200();
              UV3B.print("ST0");
              UV3B.write('\r');
-             delay(200);
+             delay200();
              }
+}
+
+
+/************************
+ *  Send a cmd to RS-UV3 with data
+ */
+
+ void sendDatacmd(char* cmd, char* data)
+{
+  
+ flushBuffers();
+ if (currentDevice == 0) {
+     UV3A.write('\r');
+     UV3A.flush();
+     UV3A.print(cmd);
+     UV3A.print(data);
+     UV3A.write('\r');
+     delay200();
+     } else { 
+             UV3B.write('\r');
+             UV3B.flush();
+             UV3B.print(cmd);
+             UV3B.print(data);
+             UV3B.write('\r');
+             delay200();
+             }
+}
+
+/************************
+ * delay2k();
+************************/
+
+void delay2k()
+{
+  delay(2000);
+}
+
+/************************
+ * delay200();
+************************/
+
+void delay200()
+{
+  delay(200);
 }
 

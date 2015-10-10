@@ -11,6 +11,9 @@
   Arduino Projects for Amateur Radio, McGraw-Hill Publishing 
   by Jack Purdum & Dennis Kidder. 
 
+
+  Please change the value of MYCALLSIGN field to your call sign
+
 *********************************************************************/
 
 /******************
@@ -97,6 +100,8 @@ char dataFld[32];
 char inputFld[8];
 char key;
 char memoryChannel[2];
+char myCallsign[7] = "WD9GYM";       // BE CERTAIN YOU CHANGE THIS LINE TO YOUR CALL
+char radioCallsign[16];
 char radioCTCCS[6];
 char radioTemp[4];
 char recvFreq[8], xmitFreq[8], oldFreq[8];
@@ -132,10 +137,11 @@ String str;  //declaring string
 String squelchStr;
 String radioCTCCSstr;
 String volumeStr;
+
 /***********************************
  *    Function menu titles
 ***********************************/
-#define MAXFUNCTIONS 12
+#define MAXFUNCTIONS 14
 #define MAXITEMSIZE 20
 char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] = 
        { "Set Rx Freq        ", "Set Tx Freq        ", 
@@ -143,7 +149,8 @@ char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] =
          "Set CTCSS          ", "Repeater ON/OFF    ", 
          "BEEP ON/OFF        ", "Fan ON/OFF         ",
          "Set Clock          ", "Set Volume         ",        
-         "Display System Info", "Reset RS-UV3       "
+         "Display System Info", "Reset RS-UV3       ",
+         "Set Call Sign      ", "Transmit Call Sign "
          };
 #define NUMBEROFTONES 50
 #define SIZEOFTONE 6
@@ -215,13 +222,13 @@ void setup(){
 #ifdef DEBUGTIME
     lcd.print("Unable to sync RTC");
     Serial.println("Unable to sync with the RTC");
-    delay(2000);
+    delay2k();
 #endif
     } else {
 #ifdef DEBUGTIME
     Serial.println("RTC has set the system time");
     lcd.print("RTC set the sys time");
-    delay(2000);
+    delay2k();
 #endif
   }
   lcd.clear();

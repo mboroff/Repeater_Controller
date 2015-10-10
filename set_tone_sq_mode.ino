@@ -45,7 +45,7 @@ void setToneMode()
                 } else {
                     lcd.setCursor(0, 3);
                     lcd.print("Invalid tone value");
-                    delay(2000);
+                    delay2k();
                     lcd.setCursor(0, 3);
                     lcd.print("                  ");
                     }
@@ -100,7 +100,7 @@ Serial.println("Tone mode saved");
 Serial.println("===================================");
 #endif   
    getTonemode();
-   delay(2000);
+   delay2k();
 }
 
 

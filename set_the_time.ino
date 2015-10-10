@@ -85,7 +85,7 @@ void settheTime()
                                           lcd.print(myYr,DEC);
                                           lcd.setCursor(0, 4);
                                           lcd.print("Time updated       ");
-                                          delay(2000);
+                                          delay2k();
                                           time_t t = processSyncMessage();
                                           myYr = myYr - 2000;
                           // This sets the system time (NOT the Teensy RTC Clock)

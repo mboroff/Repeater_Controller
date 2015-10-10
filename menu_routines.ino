@@ -66,7 +66,7 @@ void mainMenu()
                                         menuSelect = 1;
                                         lcd.setCursor(0, 3);
                                         lcd.print("Invalid selection");
-                                        delay(2000);
+                                        delay2k();
                                         lcd.setCursor(0, 3);
                                         lcd.print("                 ");
                                     }
@@ -155,6 +155,14 @@ void processMenu()
 
           case 12:          // Reset RS-UV3
           reset_RS_UV3();
+          break;
+          
+          case 13:           //   Set Call Sign 
+          SetCallsign();
+          break;
+
+          case 14:          //   Transmit Call Sign
+          xmitCallsign();
           break;
           
          default:

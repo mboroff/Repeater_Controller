@@ -39,7 +39,7 @@ void toggleBeep()
                               lcd.print("Beep OFF saved    ");
                               }
                   menuSwitch = 1;
-                  delay(2000);
+                  delay2k();
                   break;
                   }
           else if (key == 'A' ) {              // toggle key
