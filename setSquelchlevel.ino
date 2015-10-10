@@ -34,9 +34,7 @@ Serial.println("Enter Squelch level menu");
               }
           else if (key == '*') {            // confirmation key
                   sendSquelchlevel();              
-                  delay(2000);
                   menuSwitch = 1;
-                  delay(2000);
                   break;
                   }
           else if (key == 'A' ) {              // increment squelch value
@@ -66,23 +64,13 @@ Serial.println("Enter Squelch level menu");
 
 void getSquelchlevel()
 {
-  squelchLevel[0] = '\0';
-  flushBuffers();
 #ifdef DEBUG  
-Serial.println("Get sqlchlvl");  
+  Serial.println("Get sql lvl");
 #endif
-  if (currentDevice == 0) {                        // check for device
-      UV3A.write('\r');
-      UV3A.print("SQ?\r");
-      get_UV3buff();
-      squelchLevel[0] = UV3buff[4];
-  } else {
-      UV3B.write('\r');
-      UV3B.print("SQ?\r");
-      get_UV3buff();
-      squelchLevel[0] = UV3buff[4];
-  }
-  squelchValue = atoi(squelchLevel);
+
+  sendReadcmd("SQ?\r");
+  get_UV3buff();
+  squelchLevel[0] = UV3buff[4];
 }
 
 /***********************************
@@ -93,34 +81,15 @@ void sendSquelchlevel()
 #ifdef DEBUG  
   Serial.println("Send sql lvl");
 #endif
+
    squelchStr = String(squelchValue);
    squelchStr.toCharArray(squelchLevel, 2);
+   sendStorecmd("SQ", squelchLevel);
+
 #ifdef DEBUG
   Serial.print("Sqlch lvl = "); Serial.println(squelchLevel); 
 #endif
-      if (currentDevice == 0) {                   // check which device
-          UV3A.write('\r');
-          UV3A.print("SQ");
-          UV3A.write(squelchLevel);
-          UV3A.write('\r');
-          delay(200);
-#ifdef DEBUG
-          Serial.print("Sending ST"); Serial.println(memoryChannel);
-#endif
-          UV3A.print("ST");
-          UV3A.write(memoryChannel);
-          UV3A.write('\r');
-       } else {
-                UV3B.write('\r');
-                UV3B.print("SQ");
-                UV3B.write(squelchLevel);
-                UV3B.write('\r');
-                UV3B.print("ST");
-                UV3B.write(memoryChannel);
-                UV3B.write('\r');
-                }
-   delay(200);             
-   getSquelchlevel();
+
    lcd.setCursor(0, 3);   
    lcd.print("Squelch Level Saved");
    delay(2000);

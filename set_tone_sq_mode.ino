@@ -39,6 +39,7 @@ void setToneMode()
           else {               
                 if (key == '0' || key == '1' || key == '2' ) {
                    toneMode[0] = key;
+                   toneMode[1] = '\0';
                    lcd.setCursor(12, 2);
                    lcd.print(key);
                 } else {
@@ -72,21 +73,10 @@ void getTonemode()
 #ifdef DEBUGTM
  Serial.println("Getting tone mode");
 #endif  
-  flushBuffers();  
-  if (currentDevice == 0) {                        // check for device A
-      UV3A.write('\r');
-      UV3A.print("TM?\r");
-      get_UV3buff();                              // get the value
-#ifdef DEBUGTM
-Serial.print("UV3buff = "); Serial.println(UV3buff);
-#endif
-  } else {
-      UV3B.write('\r');
-      UV3B.print("TM?\r");
-      get_UV3buff();
-  }
+  sendReadcmd("TF?\r");
+  get_UV3buff();
   toneMode[0] =  UV3buff[4];
-#ifdef DEBUG
+#ifdef DEBUGTM
 Serial.print("tone mode = "); Serial.println(toneMode);
 #endif
 }
@@ -101,25 +91,8 @@ void sendTonemode()
    Serial.println("Send tone mode");
    Serial.print("toneMode = "); Serial.println(toneMode[0]);
 #endif  
-   if (currentDevice == 0) {                   // check which device
-          UV3A.write('\r');
-          UV3A.print("TM");
-          UV3A.write(toneMode);
-          UV3A.write('\r');
-          UV3A.flush();
-          UV3A.print("ST");
-          UV3A.write(memoryChannel);
-          UV3A.write('\r');
-      } else {
-                UV3B.write('\r');
-                UV3B.print("TM");
-                UV3B.write(toneMode);
-                UV3B.write('\r');
-                UV3B.flush();
-                UV3B.print("ST");
-                UV3B.write(memoryChannel);
-                UV3B.write('\r');
-                }
+
+   sendStorecmd("TM", toneMode);
    lcd.setCursor(0, 3);
    lcd.print("Tone Mode Saved    ");
 #ifdef DEBUGTM

@@ -94,24 +94,12 @@ void getVolume()
 #ifdef DEBUG
  Serial.println("get volume");
 #endif  
-  flushBuffers();
-  if (currentDevice == 0) {                        // check for device A
-      UV3A.write('\r');
-      UV3A.print("VU?\r");
-      get_UV3buff();                              // get the value
-      UV3volume[0], UV3buff[4];
-      for (int i= 0; i <2; i++) {
-           UV3volume[i] = UV3buff[i + 4];
+  sendReadcmd("VU?\r");
+  get_UV3buff();
+  // get the value
+  for (int i= 0; i <2; i++) {
+       UV3volume[i] = UV3buff[i + 4];
       }
-  } else {
-      UV3B.write('\r');
-      UV3B.print("VU?\r");
-      get_UV3buff();
-      for (int i= 0; i <2; i++) {
-           UV3volume[i] = UV3buff[i + 4];
-      }
-  }
-  delay(200);
 #ifdef DEBUG  
   Serial.print("volume = "); Serial.println(UV3volume);
 #endif  
@@ -125,26 +113,9 @@ void sendVolume()
 #ifdef DEBUG
   Serial.println("send Volume");
 #endif  
-   if (currentDevice == 0) {                   // check which device
-          UV3A.write('\r');
-          UV3A.print("VU");
-          UV3A.write(UV3volume);
-          UV3A.write('\r');
-          delay(200);
-          UV3A.print("ST");
-          UV3A.write(memoryChannel);
-          UV3A.write('\r');
-      } else {
-                UV3B.write('\r');
-                UV3B.print("VU");
-                UV3B.write(UV3volume);
-                UV3B.write('\r');
-                delay(200);
-                UV3B.print("ST");
-                UV3B.write(memoryChannel);
-                UV3B.write('\r');
-                }
-   delay(200);
+
+   sendStorecmd("VU", UV3volume);
+
    lcd.setCursor(0, 3);
    lcd.print("Volume Saved");
    delay(2000);

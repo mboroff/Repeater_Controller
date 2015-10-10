@@ -79,27 +79,19 @@ void getCTCCS()
 #ifdef DEBUG
  Serial.println("get CTCCS");
 #endif  
-  flushBuffers();
-  if (currentDevice == 0) {                        // check for device A
-      UV3A.write('\r');
-      UV3A.print("TF?\r");
-      get_UV3buff();                              // get the value
-      memcpy(radioCTCCS, UV3buff, 5);
-  } else {
-      UV3B.write('\r');
-      UV3B.print("TF?\r");
-      get_UV3buff();
-      memcpy(radioCTCCS, UV3buff, 5);
-  }
+
+  sendReadcmd("TF?\r");
+  get_UV3buff();
+  memcpy(radioCTCCS, UV3buff, 5);
   radioCTCCSf = atof(radioCTCCS)/ 100;                     // convert read CTCCS
   for (int i = 0; i < 50; i++) {                          // look for match to set value of CTCCSctr
       float tempCTCCS = atof(CTCSStable[i]) * 10;
       tempCTCCS = tempCTCCS/10;
-       if (tempCTCCS == radioCTCCSf) {                     // matched break out
-           CTCCSctr = i + 1;
-           break;
-       }
-  }
+      if (tempCTCCS == radioCTCCSf) {                     // matched break out
+          CTCCSctr = i + 1;
+          break;
+          }
+      }
 }
 
 /***********************************
@@ -113,29 +105,11 @@ void sendCTCCS()
    radioCTCCSf = atof(CTCSStable[CTCCSctr - 1]) * 100;
    radioCTCCSi = radioCTCCSf;
    sprintf(radioCTCCS, "%05i",radioCTCCSi);
-   if (currentDevice == 0) {                   // check which device
-          UV3A.write('\r');
-          UV3A.print("TF");
-          UV3A.write(radioCTCCS);
-          UV3A.write('\r');
-          delay(200);
-          UV3A.print("ST");
-          UV3A.write(memoryChannel);
-          UV3A.write('\r');
-      } else {
-                UV3B.write('\r');
-                UV3B.print("TF");
-                UV3B.write(radioCTCCS);
-                UV3B.write('\r');
-                delay(200);
-                UV3B.print("ST");
-                UV3B.write(memoryChannel);
-                UV3B.write('\r');
-                }
-   delay(200);
+   sendStorecmd("TF", radioCTCCS);
+
    lcd.setCursor(0, 3);
    lcd.print("CTCCS Freq Saved");
-
+   delay(2000);
 }
 
 

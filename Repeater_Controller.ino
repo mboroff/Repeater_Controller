@@ -15,7 +15,7 @@
 //#define DEBUGGETUVBUFF 1
 //#define DEBUGTIME 1
 //#define DEBUGC 1 
-#define DEBUGTM 1
+//#define DEBUGTM 1
 
 /******************************************
  *         Includes
@@ -88,9 +88,10 @@ int volumeCtr = 0;
 
 float radioCTCCSf;
   
-char memoryChannel[2];
+char dataFld[32];
 char inputFld[8];
 char key;
+char memoryChannel[2];
 char radioCTCCS[6];
 char radioTemp[4];
 char recvFreq[8], xmitFreq[8], oldFreq[8];

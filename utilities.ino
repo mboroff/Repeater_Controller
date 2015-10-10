@@ -103,4 +103,56 @@ void flushBuffers()
   UV3B.flush();
 }
 
+/***************************
+ *   Send a query to RS-UV3
+ */
+void sendReadcmd(char* cmd)
+{
+  for (int i = 0; i <32 ; i++) {
+       UV3buff[i] = '\0';       //clear the buff
+       }
+  flushBuffers();
+  if (currentDevice == 0) {
+      UV3A.write('\r');
+      UV3A.flush();
+      UV3A.print(cmd);
+      delay(200);
+      } else {
+              UV3B.write('\r');
+              UV3B.flush();
+              UV3B.print(cmd);
+              delay(200);
+              }
+}
+
+/************************
+ *  Send a data store to RS-UV3
+ */
+
+ void sendStorecmd(char* cmd, char* data)
+{
+  
+ flushBuffers();
+ if (currentDevice == 0) {
+     UV3A.write('\r');
+     UV3A.flush();
+     UV3A.print(cmd);
+     UV3A.write(data);
+     UV3A.write('\r');
+     delay(200);
+     UV3A.print("ST0");
+     UV3A.write('\r');
+     delay(200);
+     } else { 
+             UV3B.write('\r');
+             UV3B.flush();
+             UV3B.print(cmd);
+             UV3B.write(data);
+             UV3B.write('\r');
+             delay(200);
+             UV3B.print("ST0");
+             UV3B.write('\r');
+             delay(200);
+             }
+}
 

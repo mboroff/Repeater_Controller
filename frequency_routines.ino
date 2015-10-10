@@ -166,38 +166,17 @@ void getFreq()
 #ifdef DEBUG  
   Serial.println("get frequency");
 #endif  
-  for (int i = 0; i <32 ; i++) {
-       UV3buff[i] = '\0';       //clear the buff
-  }
- flushBuffers();
- if (currentDevice == 0) {
-      UV3A.print("f?\r");
-    } else if (currentDevice == 1) {
-               UV3B.print("f?\r");
-               } 
-    get_UV3buff();           
-    delay(200);  
-  for (int i = 0; i <32 ; i++) {
-       UV3buff[i] = '\0';       //clear the buff
-  }
-
-  if (currentDevice == 0) {
-      UV3A.print("f?\r");
-    } else if (currentDevice == 1) {
-               UV3B.print("f?\r");
-               } 
-    delay(200);  
-
-    get_UV3buff();
+  sendReadcmd("F?\r");
+  get_UV3buff();
          
-    for (int i = 0; i < 3; i++) {
-         recvFreq[i] = UV3buff[6 + i];
-         xmitFreq[i] = UV3buff[20 +i];
-         }
-    for (int i = 0; i < 3; i++) {
-         recvFreq[i + 3] = UV3buff[9 + i];
-         xmitFreq[i+ 3] = UV3buff[23 +i];
-         }
+  for (int i = 0; i < 3; i++) {
+       recvFreq[i] = UV3buff[6 + i];
+       xmitFreq[i] = UV3buff[20 +i];
+       }
+  for (int i = 0; i < 3; i++) {
+       recvFreq[i + 3] = UV3buff[9 + i];
+       xmitFreq[i+ 3] = UV3buff[23 +i];
+       }
 }
 
 /****************************************
