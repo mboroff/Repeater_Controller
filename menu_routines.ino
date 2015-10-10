@@ -149,6 +149,10 @@ void processMenu()
           settheVolume();
           break;
           
+          case 11:           // Display System Info
+          get_repeater_info();
+          break;
+          
          default:
            break;   
   

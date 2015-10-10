@@ -6,6 +6,11 @@
 
   Written by Martin Boroff WD9GYM.  
   BSD license, all text above must be included in any redistribution
+
+  Frequency display function taken from VFO project in
+  Arduino Projects for Amateur Radio, McGraw-Hill Publishing 
+  by Jack Purdum & Dennis Kidder. 
+
 *********************************************************************/
 
 /******************
@@ -130,15 +135,16 @@ String volumeStr;
 /***********************************
  *    Function menu titles
 ***********************************/
-#define MAXFUNCTIONS 10 
+#define MAXFUNCTIONS 11 
 #define MAXITEMSIZE 20
 char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] = 
        { "Set Rx Freq        ", "Set Tx Freq        ", 
          "Set Sqlch Level    ", "Tone Sqlch Mode    ", 
          "Set CTCSS          ", "Repeater ON/OFF    ", 
          "BEEP ON/OFF        ", "Fan ON/OFF         ",
-         "Set Clock          ", "Set Volume         "        
-       };
+         "Set Clock          ", "Set Volume         ",        
+         "Display System Info"
+         };
 #define NUMBEROFTONES 50
 #define SIZEOFTONE 6
 char CTCSStable[NUMBEROFTONES][SIZEOFTONE] =
