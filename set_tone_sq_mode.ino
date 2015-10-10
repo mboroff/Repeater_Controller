@@ -40,7 +40,7 @@ void setToneMode()
                   menuSwitch = 1;
                   break;
                   }
-          else if (key == '0' || key == '1' || key == '2') {
+          else if (key == '0' || key == '1' || key == '2' || key == '3') {
                    toneMode[0] = key;
                    toneMode[1] = '\0';
                    lcd.setCursor(12, 2);

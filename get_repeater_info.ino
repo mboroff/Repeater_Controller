@@ -256,7 +256,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("CTCSS Mode");
+  lcd.print("Tone Squelch Mode");
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
