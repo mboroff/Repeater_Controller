@@ -12,7 +12,6 @@
   by Jack Purdum & Dennis Kidder. 
 
 
-  Please change the value of MYCALLSIGN field to your call sign
 
 *********************************************************************/
 
@@ -76,11 +75,14 @@ Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 /***************************
  *  Global Variables
 ***************************/
-
+    
+int bufferIndex = 0;
 int buzzerAddr = 0; /** the current address in the EEPROM (i.e. which byte we're going to write to next) **/
 int deviceAddr = 1;
 int freqSwitch = 0, CTCCSswitch = 0;
 int fanAddr = 2;
+int keyIndex = 0;
+int keySwitch = 0;
 unsigned int myHr,myMin,mySec,myDay,myMonth,myYr;
 int inputCtr = 0, CTCCSctr = 1;
 int menuSwitch = 0,  menuSelect = 1, currentDevice = 0;
@@ -96,11 +98,14 @@ int volumeCtr = 0;
 
 float radioCTCCSf;
   
+char callSignbuffer[21];
+char currentKey[2];
 char dataFld[32];
 char inputFld[8];
 char key;
 char memoryChannel[2];
-char myCallsign[7] = "WD9GYM";       // BE CERTAIN YOU CHANGE THIS LINE TO YOUR CALL
+char myCallsign[16];
+char prevKey;
 char radioCallsign[16];
 char radioCTCCS[6];
 char radioTemp[4];
@@ -111,6 +116,7 @@ char toneMode[5];
 char UV3buff[32];
 char UV3volume[3];
 
+boolean keyEntered = false;
 boolean repeaterSwitch = true, buzzerEnabled = true;
 boolean fanEnabled = true, repeaterEnabled = true;
 boolean SQ_OP = false;
@@ -169,7 +175,27 @@ char CTCSStable[NUMBEROFTONES][SIZEOFTONE] =
         "225.7", "229.1", "233.6", "241.8",
         "250.3", "254.1"
       };
-       
+
+#define MAXKEYVALUES 5
+#define KEYVALUESIZE 2
+char keyTable2[MAXKEYVALUES][KEYVALUESIZE] = 
+       { "A", "B","C", "2"," "};
+char keyTable3[MAXKEYVALUES][KEYVALUESIZE] = 
+       { "D", "E","F", "3"," "};
+char keyTable4[MAXKEYVALUES][KEYVALUESIZE] = 
+       { "G", "H","I", "4"," "};
+char keyTable5[MAXKEYVALUES][KEYVALUESIZE] = 
+       { "J", "K","L", "5"," "};
+char keyTable6[MAXKEYVALUES][KEYVALUESIZE] = 
+       { "M", "N","O", "6"," "};
+char keyTable7[MAXKEYVALUES][KEYVALUESIZE] = 
+       { "P", "Q","R", "S","7"};
+char keyTable8[MAXKEYVALUES][KEYVALUESIZE] = 
+       { "T", "U","V", "8"," "};
+char keyTable9[MAXKEYVALUES][KEYVALUESIZE] = 
+       { "W", "X","Y", "Z","9"};
+
+     
 /****************************************************
  *                  Setup
 *****************************************************/
