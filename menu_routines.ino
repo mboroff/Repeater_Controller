@@ -1,5 +1,8 @@
 /**********************************
  *       Main Menu
+ *       scroll through the menu 
+ *       titles or accept number 
+ *       directly
 ***********************************/
 
 void mainMenu()

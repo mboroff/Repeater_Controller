@@ -1,5 +1,7 @@
 /**************************************************
- *   get_repeater_info
+ *   get_repeater_info all information
+ *   the name of each field read is listed 
+ *   in the routine
 **************************************************/
 
 void get_repeater_info()

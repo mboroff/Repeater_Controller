@@ -72,6 +72,8 @@ void printCTCCS()
 }
 /*************************************
  *      get the current CTCCS 
+ *      scroll through the taable of 
+ *      values
 *************************************/
 
 void getCTCCS()

@@ -11,8 +11,6 @@
   Arduino Projects for Amateur Radio, McGraw-Hill Publishing 
   by Jack Purdum & Dennis Kidder. 
 
-
-
 *********************************************************************/
 
 /******************
@@ -120,12 +118,6 @@ boolean keyEntered = false;
 boolean repeaterSwitch = true, buzzerEnabled = true;
 boolean fanEnabled = true, repeaterEnabled = true;
 boolean SQ_OP = false;
-/***************************************
-        timers
-***************************************/
-unsigned long lastPolltime;
-#define TIMETOPOLL  20000      // Amount of time to wait (in milliseconds) to read board
-
 
 #define TWOMUPPERFREQUENCYLIMIT      148000L  // Upper band edge
 #define TWOMLOWERFREQUENCYLIMIT      144000L  // Lower band edge
@@ -135,11 +127,12 @@ unsigned long lastPolltime;
 #define FOURFORTYLOWERFREQUENCYLIMIT 420000L  // Lower band edge
 #define FREQINBAND        0               // Used with range checking
 #define FREQOUTOFBAND     1
+
 volatile int_fast32_t currentFrequency;
 
 byte ones, tens, hundreds, thousands, tenthousands, hundredthousands, millions; // Placeholders
 
-String str;  //declaring string
+String str;  
 String squelchStr;
 String radioCTCCSstr;
 String volumeStr;
@@ -175,7 +168,9 @@ char CTCSStable[NUMBEROFTONES][SIZEOFTONE] =
         "225.7", "229.1", "233.6", "241.8",
         "250.3", "254.1"
       };
-
+/*********************************
+ *  keypad tables
+*********************************/
 #define MAXKEYVALUES 5
 #define KEYVALUESIZE 2
 char keyTable2[MAXKEYVALUES][KEYVALUESIZE] = 
@@ -195,7 +190,7 @@ char keyTable8[MAXKEYVALUES][KEYVALUESIZE] =
 char keyTable9[MAXKEYVALUES][KEYVALUESIZE] = 
        { "W", "X","Y", "Z","9"};
 
-     
+
 /****************************************************
  *                  Setup
 *****************************************************/
@@ -204,7 +199,7 @@ void setup(){
      pinMode(FANPIN, OUTPUT);
      pinMode(REPEATERPIN, OUTPUT);
 
- // read a bytes from the current address of the EEPROM
+ // read a bytes from the current addresses of the EEPROM
   buzzerEnabled = EEPROM.read(buzzerAddr);
   currentDevice = EEPROM.read(deviceAddr);
   fanEnabled = EEPROM.read(fanAddr);
@@ -259,12 +254,12 @@ void setup(){
   }
   lcd.clear();
 
-  lcd.setCursor(3, 0);
+  lcd.setCursor(3, 0);     // print the version screen
   lcd.print("WD9GYM RS-UV3");
   lcd.setCursor(0, 1);
   lcd.print("Repeater Controller");
   lcd.setCursor(0,2);
-  lcd.print("10/09/2015  Rel 1.0");
+  lcd.print("10/12/2015  Rel 1.0");
   delay(3000);
 
 /******************************************
@@ -277,26 +272,25 @@ Serial.println("Setup code");
   memoryChannel[0] = '0';
   memoryChannel[1] = '\0';
   lcd.clear();
-  getConfiginfo();
+  getConfiginfo();     // see utility code file
   printFreq();
 #ifdef DEBUG  
 Serial.println("end of setup");  
 #endif
-  lastPolltime = millis();
 }
 
 /************************************  
  *       Loop
 *************************************/
 void loop() {
-  if (Serial.available()) {
+  if (Serial.available()) {       // Serial input can set the time format TXXXXXXXXXXX where xxx = number of seconds since 1/1/1970
     time_t t = processSyncMessage();
     if (t != 0) {
       Teensy3Clock.set(t); // set the RTC
       setTime(t);
     }
   }
-  if (prevSecond !=second()) {
+  if (prevSecond !=second()) {        // if a new second display new time
       prevSecond =second(); 
       digitalClockDisplay();
   }
@@ -310,18 +304,18 @@ void loop() {
     if (buzzerEnabled == true){
         beep();                    
         }
-    if (key == '*') {               // Did user activate menu
+    if (key == '*') {               // Did user activate function menu
         mainMenu();               // process the menu request
         printFreq();
         }
 
-    else if (key == 'A') {               // Did user change device
+    else if (key == 'A') {               // Did user change/refresh device A
         currentDevice = 0;
         EEPROM.write(deviceAddr, currentDevice);
         getConfiginfo();
         printFreq();
         }
-    else if (key == 'B') {               // Did user change device
+    else if (key == 'B') {               // Did user change/refresh device
         currentDevice = 1;
         EEPROM.write(deviceAddr, currentDevice);
         getConfiginfo();
@@ -332,6 +326,9 @@ void loop() {
 
 }
 
+/****************************************
+ * Clock routine
+****************************************/
 void digitalClockDisplay() {
   // digital clock display of the time
 #ifdef DEBUGTIME
@@ -399,11 +396,4 @@ unsigned long processSyncMessage() {
   return pctime;
 }
 
-void printDigits(int digits){
-  // utility function for digital clock display: prints preceding colon and leading 0
-  Serial.print(":");
-  if(digits < 10)
-    Serial.print('0');
-  Serial.print(digits);
-}
 

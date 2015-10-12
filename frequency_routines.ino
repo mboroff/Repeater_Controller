@@ -1,7 +1,9 @@
-/***************************************
+/********************************************
  * Set freq function  No backspace key - 
  * if user makes an error they can hit #
-****************************************/
+ * routine keeps track of which device is 
+ * current and wheter it is working Rx or Tx
+********************************************/
 void setFreq()
 {
 #ifdef DEBUG

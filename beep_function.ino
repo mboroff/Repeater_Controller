@@ -17,7 +17,7 @@ void toggleBeep()
         lcd.print("OFF");
       }
   
-  menuSwitch = 0;
+  menuSwitch = 0;                    // make sure loop continues until save or cancel
     while(menuSwitch == 0) {
       lcd.setCursor(7, 2);
       key = keypad.getKey();               // see if a key has been pressed

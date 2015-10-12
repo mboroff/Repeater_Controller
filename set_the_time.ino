@@ -1,5 +1,6 @@
 /******************************************
- * Set the   time
+ * Set the time - scroll through the values 
+ * and let user accept the next entry
 ******************************************/
 
 void settheTime()
