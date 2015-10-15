@@ -37,8 +37,8 @@
 #define FANPIN      12
 #define REPEATERPIN 11
 
-SoftwareSerial UV3A(9, 10); // RX, TX
-SoftwareSerial UV3B(7, 8); // RX, TX
+SoftwareSerial UV3A(9, 10); // RX, TX 
+SoftwareSerial UV3B(7, 8); // RX, TX 
 /*******************************************
  *           LCD definitions
  *******************************************           
@@ -259,7 +259,7 @@ void setup(){
   lcd.setCursor(0, 1);
   lcd.print("Repeater Controller");
   lcd.setCursor(0,2);
-  lcd.print("10/12/2015  Rel 1.0");
+  lcd.print("10/14/2015  Rel 1.0");
   delay(3000);
 
 /******************************************
