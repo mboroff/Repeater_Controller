@@ -90,67 +90,69 @@ Serial.println("Entring frequency menu");
                                     if (freqSwitch == 1) {                 // if processing recv
                                         memcpy (recvFreq,inputFld, 6);
                                         memcpy (UV3buff, inputFld, 6);
+                                        UV3buff[6] = '\0';
                                         lcd.setCursor(4,2);
                                         currentFrequency = atol(recvFreq);
                                         if (currentDevice == 0) {    // check device
-                                            UV3A.write('\r');
-                                            UV3A.print("FR");
-                                            UV3A.write(UV3buff);
-                                            UV3A.write("000");              // freq is stored in kHz
-                                            UV3A.write('\r');
+                                            Serial3.write('\r');
+                                            Serial3.print("FR");
+                                            Serial3.write(UV3buff);
+                                            Serial3.write("000");              // freq is stored in kHz
+                                            Serial3.write('\r');
                                             delay200();
-                                            UV3A.flush();
-                                            UV3A.print("ST");
-                                            UV3A.write(memoryChannel);
-                                            UV3A.write('\r');
+                                            Serial3.flush();
+                                            Serial3.print("ST");
+                                            Serial3.write(memoryChannel);
+                                            Serial3.write('\r');
                                             } else {                     // device 2
-                                                    UV3B.write('\r');
-                                                    UV3B.print("FR");
-                                                    UV3B.write(UV3buff);
-                                                    UV3B.write("000");         // freq is stored in kHz
-                                                    UV3B.write('\r');
+                                                    Serial2.write('\r');
+                                                    Serial2.print("FR");
+                                                    Serial2.write(UV3buff);
+                                                    Serial2.write("000");         // freq is stored in kHz
+                                                    Serial2.write('\r');
                                                     delay200();
-                                                    UV3B.flush();
-                                                    UV3B.print("ST");
-                                                    UV3B.write(memoryChannel);
-                                                    UV3B.write('\r');
+                                                    Serial2.flush();
+                                                    Serial2.print("ST");
+                                                    Serial2.write(memoryChannel);
+                                                    Serial2.write('\r');
 
                                             }
                                         } else {          // if processing xmit
                                                 memcpy (xmitFreq, inputFld, 6);     
-                                                memcpy (UV3buff, inputFld, 6);     
-                                                lcd.setCursor(4, 2);
-                                                currentFrequency = atol(xmitFreq);
-               
+                                                memcpy (UV3buff, inputFld, 6);
+                                                UV3buff[6] = '\0';
+                                                lcd.setCursor(4,2);
+                                                currentFrequency = atol(recvFreq);
                                                 if (currentDevice == 0) {    // check device
-                                                    UV3A.write('\r');
-                                                    UV3A.print("FT");
-                                                    UV3A.write(UV3buff);
-                                                    UV3A.write("000");
-                                                    UV3A.write('\r');
+                                                    Serial3.write('\r');
+                                                    Serial3.print("FT");
+                                                    Serial3.write(UV3buff);
+                                                    Serial3.write("000");              // freq is stored in kHz
+                                                    Serial3.write('\r');
                                                     delay200();
-                                                    UV3A.flush();
-                                                    UV3A.print("ST");
-                                                    UV3A.write(memoryChannel);
-                                                    UV3A.write('\r');
-                                                    } else  {    // 2nd device
-                                                             UV3B.write('\r');
-                                                             UV3B.print("FT");
-                                                             UV3B.write(UV3buff);
-                                                             UV3B.write("000");
-                                                             UV3B.write('\r');
-                                                             delay200();
-                                                             UV3B.flush();
-                                                             UV3B.print("ST");
-                                                             UV3B.write(memoryChannel);
-                                                             UV3B.write('\r');
-                                                             }                                      }
-                                               delay200();
-                                               lcd.setCursor(0, 3);
-                                               lcd.print("Freq saved");
-                                               delay2k();
-                                               menuSwitch = 1;
-                                               break;
+                                                    Serial3.flush();
+                                                    Serial3.print("ST");
+                                                    Serial3.write(memoryChannel);
+                                                    Serial3.write('\r');
+                                                    } else {                     // device 2
+                                                            Serial2.write('\r');
+                                                            Serial2.print("FT");
+                                                            Serial2.write(UV3buff);
+                                                            Serial2.write("000");         // freq is stored in kHz
+                                                            Serial2.write('\r');
+                                                            delay200();
+                                                            Serial2.flush();
+                                                            Serial2.print("ST");
+                                                            Serial2.write(memoryChannel);
+                                                            Serial2.write('\r');
+                                                            }
+                                          }
+                                          delay200();
+                                          lcd.setCursor(0, 3);
+                                          lcd.print("Freq saved");
+                                          delay2k();
+                                          menuSwitch = 1;
+                                          break;
                                   }                                    // end of in band
 
                         }                 // end of counter = 6
@@ -171,13 +173,9 @@ void getFreq()
   sendReadcmd("F?\r");
   get_UV3buff();
          
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 6; i++) {
        recvFreq[i] = UV3buff[6 + i];
        xmitFreq[i] = UV3buff[20 +i];
-       }
-  for (int i = 0; i < 3; i++) {
-       recvFreq[i + 3] = UV3buff[9 + i];
-       xmitFreq[i+ 3] = UV3buff[23 +i];
        }
 }
 
@@ -190,7 +188,7 @@ void printFreq()
 #ifdef DEBUG
   Serial.println("ptrintFreq");
 #endif
-
+  
   lcd.clear();
   lcd.setCursor(0, 1);
   lcd.print("RX: ");
@@ -261,10 +259,11 @@ Serial.println("showFreq");
 
 int DoRangeCheck()
 {
-//#ifdef DEBUG  
+#ifdef DEBUG  
   Serial.println("Do range check");
   Serial.print("current freq = "); Serial.println(currentFrequency);
-//#endif  
+Serial.print("TWOMLOWERFREQUENCYLIMIT = "); Serial.println(TWOMLOWERFREQUENCYLIMIT);  
+#endif  
 
   if (currentFrequency >= TWOMLOWERFREQUENCYLIMIT && currentFrequency <= TWOMUPPERFREQUENCYLIMIT) {
       return FREQINBAND;

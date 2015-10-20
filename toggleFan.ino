@@ -14,8 +14,11 @@ void toggleFan()
   lcd.print("Press A to toggle");
   lcd.setCursor(0, 2);
   lcd.print("Fan = ");
-  if (fanEnabled == true) {
-      lcd.print("ON  ");
+#ifdef DEBUG  
+Serial.print("Start fanEnabled = "); Serial.println(fanEnabled);
+#endif
+  if (fanEnabled == relayOn) {
+      lcd.print("ON ");
       } else {
         lcd.print("OFF");
       }
@@ -34,32 +37,28 @@ void toggleFan()
               break;
               }
           else if (key == '*') {            // confirmation key
-                  EEPROM.write(fanAddr, fanEnabled);
                   lcd.setCursor(0, 3);
-                  if (fanEnabled == true) {
-                      lcd.print("Fan ON saved      ");
-                      } else {
-                              lcd.print("Fan OFF saved    ");
-                              }
+#ifdef DEBUG                  
+Serial.print("Saved fanEnabled = "); Serial.println(fanEnabled);
+#endif
+                  EEPROM.write(fanAddr, fanEnabled);
+                  lcd.print("FAN state saved  ");
                   menuSwitch = 1;
                   delay2k();
                   break;
                   }
           else if (key == 'A' ) {              // increment squelch value
-                   if (fanEnabled == true){
-                       fanEnabled = false;                    
+                   lcd.setCursor(6, 2);
+                   if (fanEnabled == relayOn){
+                       fanEnabled = relayOff;
+                       digitalWrite(FANPIN, HIGH);                    //turn the relay off
+                       lcd.print("OFF");
                        }
                        else {
-                            fanEnabled = true;
+                            fanEnabled = relayOn;
+                            digitalWrite(FANPIN, LOW);            // turn the relay on        
+                            lcd.print("ON ");
                             }
-                   lcd.setCursor(6, 2);
-                   if (fanEnabled == true) {
-                       digitalWrite(FANPIN, LOW);
-                       lcd.print("ON ");
-                   } else {
-                           digitalWrite(FANPIN, HIGH);
-                           lcd.print("OFF");
-                           }
               }     //end off A
         }      // end of key
        }      // end of while

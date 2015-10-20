@@ -28,17 +28,37 @@
 #include <Keypad.h>
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
-#include <Time.h>  
-#include <SoftwareSerial.h>
+#include <Time.h>
+#include <DS1307RTC.h>
+//#include <SoftwareSerial.h>
 #include <stdint.h>
 #include <EEPROM.h>
 
-#define BUZZER 13
-#define FANPIN      12
-#define REPEATERPIN 11
+#define BUZZER 12.
 
-SoftwareSerial UV3A(9, 10); // RX, TX 
-SoftwareSerial UV3B(7, 8); // RX, TX 
+#define FANPIN      11
+#define REPEATERPIN 10
+#define relayOn 0
+#define relayOff 1
+/***********************************
+ * Time 
+************************************/
+tmElements_t tm;
+const char *monthName[12] = {
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
+
+
+/*********************************************************
+ *   Valid pins for serial software ATMEGA2560
+* RX: 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), 
+* A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), 
+* A14 (68), A15 (69). 
+*********************************************************/
+//SoftwareSerial UV3A(52, 53); // RX, TX
+//SoftwareSerial UV3B(50, 51); // RX, TX
+
 /*******************************************
  *           LCD definitions
  *******************************************           
@@ -65,7 +85,7 @@ char keys[ROWS][COLS] = {
   {'7','8','9','C'},
   {'*','0','#', 'D'}
 };
-byte rowPins[ROWS] = {14, 15, 16, 6}; //connect to the row pinouts of the keypad
+byte rowPins[ROWS] = {9, 8, 7, 6}; //connect to the row pinouts of the keypad
 byte colPins[COLS] = {5, 4, 3, 2}; //connect to the column pinouts of the keypad
 
 Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
@@ -87,6 +107,7 @@ int menuSwitch = 0,  menuSelect = 1, currentDevice = 0;
 int prevSecond = 99;
 int radioCTCCSi;
 int repeaterAddr = 2;
+int fanEnabled = relayOn, repeaterEnabled = relayOn;
 int returnCode;
 int squelchValue;
 int timeFldswitch = 0;
@@ -116,7 +137,7 @@ char UV3volume[3];
 
 boolean keyEntered = false;
 boolean repeaterSwitch = true, buzzerEnabled = true;
-boolean fanEnabled = true, repeaterEnabled = true;
+
 boolean SQ_OP = false;
 
 #define TWOMUPPERFREQUENCYLIMIT      148000L  // Upper band edge
@@ -195,50 +216,82 @@ char keyTable9[MAXKEYVALUES][KEYVALUESIZE] =
  *                  Setup
 *****************************************************/
 void setup(){
-     pinMode(BUZZER, OUTPUT);
-     pinMode(FANPIN, OUTPUT);
-     pinMode(REPEATERPIN, OUTPUT);
+   pinMode(BUZZER, OUTPUT);
+   digitalWrite(BUZZER, LOW);            // turn off the relay
 
- // read a bytes from the current addresses of the EEPROM
-  buzzerEnabled = EEPROM.read(buzzerAddr);
-  currentDevice = EEPROM.read(deviceAddr);
-  fanEnabled = EEPROM.read(fanAddr);
-  if (fanEnabled == true) {
-      digitalWrite(FANPIN, LOW);
-      } else {
-              digitalWrite(FANPIN, HIGH);
-      }
-  repeaterEnabled = EEPROM.read(repeaterAddr);  
-  if (repeaterEnabled == true) {
-      digitalWrite(REPEATERPIN, LOW);
-      delay(1000);
-      } else {
-              digitalWrite(REPEATERPIN, HIGH);
-      }
-
-  
-
+   pinMode(FANPIN, OUTPUT);
+   digitalWrite(FANPIN, HIGH);            // turn off the relay
+   pinMode(REPEATERPIN, OUTPUT);
+   digitalWrite(REPEATERPIN, HIGH);       // turn off the relay
 /*******************************
  *         Serial start
 ********************************/
   Serial.begin(19200);
-  UV3A.begin(19200);      // UV3 unit one
-  UV3B.begin(19200);      // UV3 unit two
- // while (!Serial);  // Wait for Arduino Serial Monitor to open
-  delay(500);      // Wait for Arduino Serial Monitor to open
- 
+  Serial3.begin(19200);
+  Serial2.begin(19200);
 
-  
-/*******************************
- *        LCD Start
-*******************************/
+    // Set the clock to run-mode
+
   lcd.begin(20,4);         // initialize the lcd for 20 chars 4 lines, turn on backlight
   lcd.setBacklight(15);
   lcd.clear();
-  // set the Time library to use Teensy 3.0's RTC to keep time
-  setSyncProvider(getTeensy3Time);
-     lcd.setCursor(0, 0);
+  lcd.setCursor(3, 0);     // print the version screen
+  lcd.print("WD9GYM RS-UV3");
+  lcd.setCursor(0, 1);
+  lcd.print("Repeater Controller");
+  lcd.setCursor(0,2);
+  lcd.print("10/14/2015  Rel 1.0");
+  delay(3000);
+ 
 
+/******************************************
+ *  get the UV-RS3 Info
+*******************************************/
+#ifdef DEBUG
+Serial.println("Setup code");
+#endif
+
+  memoryChannel[0] = '0';
+  memoryChannel[1] = '\0';
+
+ // read a bytes from the current address of the EEPROM
+  buzzerEnabled = EEPROM.read(buzzerAddr);
+  if (buzzerEnabled != true && buzzerEnabled != false) {
+      buzzerEnabled = false;
+      }
+  currentDevice = EEPROM.read(deviceAddr);
+  if (currentDevice != 0 && currentDevice != 1) {
+      currentDevice = 0;
+  }
+  
+  fanEnabled = EEPROM.read(fanAddr);
+#ifdef DEBUG  
+Serial.print("Startup fanEnabled = "); Serial.println(fanEnabled);
+#endif
+  if (fanEnabled == relayOn){
+      digitalWrite(FANPIN, LOW);          // turn the relay on          
+     } else {
+            digitalWrite(FANPIN, HIGH);        // turn off the relay             
+            }
+
+  repeaterEnabled = EEPROM.read(repeaterAddr);
+#ifdef DEBUG  
+Serial.print("Startup repeaterEnabled = "); Serial.println(repeaterEnabled);
+#endif
+  if (fanEnabled == relayOn) {
+      digitalWrite(REPEATERPIN, LOW);   // turn the relay on   
+  } else {
+          digitalWrite(REPEATERPIN, HIGH);  // turn the relay off
+  }
+
+  delay(1000);
+  
+  getConfiginfo();
+  lcd.clear();  
+  getFreq();
+  printFreq();
+   
+  
    if (timeStatus()!= timeSet) {
 #ifdef DEBUGTIME
     lcd.print("Unable to sync RTC");
@@ -252,48 +305,58 @@ void setup(){
     delay2k();
 #endif
   }
-  lcd.clear();
 
-  lcd.setCursor(3, 0);     // print the version screen
-  lcd.print("WD9GYM RS-UV3");
-  lcd.setCursor(0, 1);
-  lcd.print("Repeater Controller");
-  lcd.setCursor(0,2);
-  lcd.print("10/14/2015  Rel 1.0");
-  delay(3000);
+  bool parse=false;
+  bool config=false;
 
-/******************************************
- *  get the UV-RS3 Info
-*******************************************/
-#ifdef DEBUG
-Serial.println("Setup code");
+  // get the date and time the compiler was run
+  if (getDate(__DATE__) && getTime(__TIME__)) {
+    parse = true;
+    // and configure the RTC with this info
+    if (RTC.write(tm)) {
+      config = true;
+    }
+  }
+
+  if (parse && config) {
+#ifdef DEBUG    
+    Serial.print("DS1307 configured Time=");
+    Serial.print(__TIME__);
+    Serial.print(", Date=");
+    Serial.println(__DATE__);
 #endif
+  } else if (parse) {
+#ifdef DEBUG    
+    Serial.println("DS1307 Communication Error :-{");
+    Serial.println("Please check your circuitry");
+#endif    
+  } else {
+#ifdef DEBUG    
+    Serial.print("Could not parse info from the compiler, Time=\"");
+    Serial.print(__TIME__);
+    Serial.print("\", Date=\"");
+    Serial.print(__DATE__);
+    Serial.println("\"");
+#endif    
+  }
 
-  memoryChannel[0] = '0';
-  memoryChannel[1] = '\0';
-  lcd.clear();
-  getConfiginfo();     // see utility code file
-  printFreq();
+
+
 #ifdef DEBUG  
 Serial.println("end of setup");  
 #endif
-}
 
+}
 /************************************  
  *       Loop
 *************************************/
-void loop() {
-  if (Serial.available()) {       // Serial input can set the time format TXXXXXXXXXXX where xxx = number of seconds since 1/1/1970
-    time_t t = processSyncMessage();
-    if (t != 0) {
-      Teensy3Clock.set(t); // set the RTC
-      setTime(t);
-    }
-  }
-  if (prevSecond !=second()) {        // if a new second display new time
-      prevSecond =second(); 
+void loop(){
+ if (RTC.read(tm)) {
+  if (prevSecond != tm.Second) {        // if a new second display new time
+      prevSecond = tm.Second; 
       digitalClockDisplay();
   }
+ }
    key = keypad.getKey();      // see if a key has been pressed
 
 /******************************  
@@ -312,19 +375,60 @@ void loop() {
     else if (key == 'A') {               // Did user change/refresh device A
         currentDevice = 0;
         EEPROM.write(deviceAddr, currentDevice);
+Serial.print("currentDevice = "); Serial.println(currentDevice);Serial.print("repeaterEnabled = "); Serial.println(repeaterEnabled);        
         getConfiginfo();
         printFreq();
         }
     else if (key == 'B') {               // Did user change/refresh device
         currentDevice = 1;
         EEPROM.write(deviceAddr, currentDevice);
+Serial.print("currentDevice = "); Serial.println(currentDevice);Serial.print("repeaterEnabled = "); Serial.println(repeaterEnabled);
         getConfiginfo();
         printFreq();
         }
   }
 
-
 }
+/******************************
+ * get_UV3buff
+ */
+byte get_UV3buff(){
+#ifdef DEBUG
+Serial.println("get_VU3buff");
+#endif
+  byte k = 0;
+  long T = millis() + 100;
+  char c = 0;
+ if (currentDevice == 0) {  
+  while ((millis() < T) && (c != '\r')){
+    if(Serial3.available()){
+      c = Serial3.read();
+      UV3buff[k++] = c;
+      if (c == '\r') UV3buff[--k] = 0;
+    }
+  }
+ } else {
+  while ((millis() < T) && (c != '\r')){
+    if(Serial2.available()){
+      c = Serial2.read();
+#ifdef DEBUGC      
+Serial.println(c);
+#endif
+      UV3buff[k++] = c;
+      if (c == '\r') UV3buff[--k] = 0;
+    }
+  }
+ }
+#ifdef DEBUG 
+Serial.print("UV3buff = "); Serial.println(UV3buff);
+#endif
+  if (c == 13){
+    return 1;
+  }
+  return 0;
+}
+
+
 
 /****************************************
  * Clock routine
@@ -332,68 +436,74 @@ void loop() {
 void digitalClockDisplay() {
   // digital clock display of the time
 #ifdef DEBUGTIME
-  Serial.print(hour());
-  printDigits(minute());
-  printDigits(second());
+  Serial.print(tm.Hour);
+  printDigits(tm.Minute);
+  printDigits(tm.Second);
   Serial.print(" ");
-  Serial.print(day());
+  Serial.print(tm.Day);
   Serial.print(" ");
-  Serial.print(month());
+  Serial.print(tm.Month);
   Serial.print(" ");
-  Serial.print(year()); 
+  Serial.print(tmYearToCalendar(tm.Year)); 
   Serial.println();
 #endif 
   lcd.setCursor(0, 3);           // Time displayed on line 4
-  if (hour() < 10) {
+  if (tm.Hour < 10) {
      lcd.print("0");
   }
-  lcd.print(hour());
+  lcd.print(tm.Hour);
   lcd.print(":");
-  if (minute() < 10) {
+  if (tm.Minute < 10) {
     lcd.print("0");
   }
-  lcd.print(minute());
+  lcd.print(tm.Minute);
   lcd.print(":");
-  if (second() < 10) {
+  if (tm.Second < 10) {
     lcd.print("0");
   }
-  lcd.print(second());
+  lcd.print(tm.Second);
   lcd.print("  ");
-  if (month() < 10) {
+  if (tm.Month < 10) {
      lcd.print("0");
   }
-  lcd.print(month());
+  lcd.print(tm.Month);
   lcd.print("/");
-  if (day() < 10) {
+  if (tm.Day < 10) {
      lcd.print("0");
   }
-  lcd.print(day());
+  lcd.print(tm.Day);
   lcd.print("/");
-  lcd.print(year());
+  lcd.print(tmYearToCalendar(tm.Year));
   
 }
 
-time_t getTeensy3Time()
+
+bool getTime(const char *str)
 {
-  return Teensy3Clock.get();
+  int Hour, Min, Sec;
+
+  if (sscanf(str, "%d:%d:%d", &Hour, &Min, &Sec) != 3) return false;
+  tm.Hour = Hour;
+  tm.Minute = Min;
+  tm.Second = Sec;
+  return true;
 }
 
-/*  code to process time sync messages from the serial port   */
-#define TIME_HEADER  "T"   // Header tag for serial time sync message
+bool getDate(const char *str)
+{
+  char Month[12];
+  int Day, Year;
+  uint8_t monthIndex;
 
-unsigned long processSyncMessage() {
-  unsigned long pctime = 0L;
-  const unsigned long DEFAULT_TIME = 1357041600; // Jan 1 2013 
-
-  if(Serial.find(TIME_HEADER)) {
-     pctime = Serial.parseInt();
-     return pctime;
-     if( pctime < DEFAULT_TIME) { // check the value is a valid time (greater than Jan 1 2013)
-       pctime = 0L; // return 0 to indicate that the time is not valid
-     }
+  if (sscanf(str, "%s %d %d", Month, &Day, &Year) != 3) return false;
+  for (monthIndex = 0; monthIndex < 12; monthIndex++) {
+    if (strcmp(Month, monthName[monthIndex]) == 0) break;
   }
-  Serial.print("pctime = "); Serial.println(pctime);
-  return pctime;
+  if (monthIndex >= 12) return false;
+  tm.Day = Day;
+  tm.Month = monthIndex + 1;
+  tm.Year = CalendarYrToTm(Year);
+  return true;
 }
 
 

@@ -18,6 +18,8 @@ Serial.println("Enter Squelch level menu");
   lcd.setCursor(0, 2);
   lcd.print("Squelch = ");
   lcd.print(squelchLevel);
+  lcd.setCursor(0, 3);
+  lcd.print("A B or Value"); 
   
   menuSwitch = 0;
     while(menuSwitch == 0) {

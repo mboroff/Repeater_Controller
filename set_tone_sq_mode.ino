@@ -17,7 +17,7 @@ void setToneMode()
   getTonemode();
   printTonemode();
   lcd.setCursor(0, 3);
-  lcd.print("Enter new value");
+  lcd.print("Enter 0 - 2");
   menuSwitch = 0;                            // esure the loop runs
 
   while (menuSwitch == 0){
@@ -40,7 +40,7 @@ void setToneMode()
                   menuSwitch = 1;
                   break;
                   }
-          else if (key == '0' || key == '1' || key == '2' || key == '3') {
+          else if (key == '0' || key == '1' || key == '2') {
                    toneMode[0] = key;
                    toneMode[1] = '\0';
                    lcd.setCursor(12, 2);
@@ -53,6 +53,8 @@ void setToneMode()
                             delay2k();
                             lcd.setCursor(0, 3);
                             lcd.print("                  ");
+                            lcd.setCursor(0, 3);
+                            lcd.print("Enter 0 - 2");
                             }
       }
   }

@@ -14,7 +14,7 @@ void toggleRepeater()
   lcd.print("Press A to toggle");
   lcd.setCursor(0, 2);
   lcd.print("Repeater = ");
-  if (repeaterEnabled == true) {
+  if (repeaterEnabled == relayOn) {
       lcd.print("ON ");
       } else {
         lcd.print("OFF");
@@ -34,32 +34,31 @@ void toggleRepeater()
               break;
               }
           else if (key == '*') {            // confirmation key
-                  EEPROM.write(repeaterAddr, repeaterEnabled);
                   lcd.setCursor(0, 3);
-                  if (repeaterEnabled == true) {
-                      lcd.print("Repeater ON saved  ");
-                      } else {
-                              lcd.print("Repeater OFF saved ");
-                              }
+#ifdef DEBUG                  
+Serial.print("Saved repaeterEnabled = "); Serial.println(repeaterEnabled);
+#endif
+                  EEPROM.write(repeaterAddr, repeaterEnabled);
+                  lcd.print("Repeater state saved");
                   menuSwitch = 1;
                   delay2k();
                   break;
                   }
           else if (key == 'A' ) {              // increment squelch value
-                   if (repeaterEnabled == true){
-                       repeaterEnabled = false;                    
+                   lcd.setCursor(11, 2);
+                   if (repeaterEnabled == relayOn){
+                       repeaterEnabled = relayOff;
+                       digitalWrite(REPEATERPIN, HIGH);        // turns the relay off            
+                       lcd.print("OFF");
                        }
                        else {
-                            repeaterEnabled = true;
+                            repeaterEnabled = relayOn;
+                            digitalWrite(REPEATERPIN, LOW);      //turns the relay on              
+                            lcd.print("ON ");
                             }
-                   lcd.setCursor(11, 2);
-                   if (repeaterEnabled == true) {
-                       digitalWrite(REPEATERPIN, LOW);
-                       lcd.print("ON ");
-                   } else {
-                           digitalWrite(REPEATERPIN, HIGH);
-                           lcd.print("OFF");
-                           }
+#ifdef DEBUG                            
+Serial.print("Toggled repeaterEnabled = "); Serial.println(repeaterEnabled);                       
+#endif
               }     //end off A
         }      // end of key
        }      // end of while

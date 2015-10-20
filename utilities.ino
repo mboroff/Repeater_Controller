@@ -7,55 +7,7 @@ void beep()
      tone(BUZZER, 700, 100);
 }
 
-/*******************************
- *   get_UV3buff() 
- *******************************/
 
-byte get_UV3buff()
-{
-#ifdef DEBUGGETUVBUFF
-  Serial.println("Get UV3buff");
-#endif  
-  byte k = 0;
-  unsigned long T = millis() + 100;
-  char c = 0;
-  
-  while ((millis() < T) && (c != '\r')){
-  if (currentDevice == 0) {              // which device
-    if(UV3A.available()){           // Data received ?
-      c = UV3A.read();
-#ifdef DEBUGC
-Serial.println(c);
-#endif
-      UV3buff[k++] = c;
-      if (c == '\r'){
-          UV3buff[--k] = 0;
-          }
-    }  
-  }else {
-         if(UV3B.available()){          // Data received ?
-            c = UV3B.read();
-#ifdef DEBUGC
-Serial.println(c);
-#endif
-            UV3buff[k++] = c;
-            if (c == '\r'){
-                UV3buff[--k] = 0;
-               }
-            }
-
-         }
-#ifdef DEBUGGETUVBUFF  
-  Serial.println(UV3buff);
-#endif  
-     }
-  UV3A.flush();
-  UV3B.flush();   
-  if (c == 13){
-      return 1;
-      }
-  return 0;
-}
 
 /*******************************************
  *      get config info from current device
@@ -66,7 +18,6 @@ void getConfiginfo()
 #ifdef DEBUG
    Serial.println("Get config");
 #endif  
-  getFreq();
   getSquelchlevel();
   getCTCCS();
   getTonemode();
@@ -80,11 +31,11 @@ void getradioTemp()
   Serial.println("Get radio temp");
 #endif  
  if (currentDevice == 0) {
-     UV3A.write('\r');
-     UV3A.print("TP\r");
+     Serial3.write('\r');
+     Serial3.print("TP\r");
  } else {
-     UV3B.write('\r');
-     UV3B.print("TP\r");
+     Serial2.write('\r');
+     Serial2.print("TP\r");
  }
  delay200();
   get_UV3buff();
@@ -99,8 +50,8 @@ void getradioTemp()
 
 void flushBuffers()
 {
-  UV3A.flush();
-  UV3B.flush();
+  Serial3.flush();
+  Serial2.flush();
 }
 
 /***************************
@@ -108,19 +59,26 @@ void flushBuffers()
  */
 void sendReadcmd(char* cmd)
 {
+#ifdef DEBUG
+Serial.print("sendReadcmd "); Serial.println(cmd);
+Serial.print("currentDevice = "); Serial.println(currentDevice);  
+#endif
   for (int i = 0; i <32 ; i++) {
        UV3buff[i] = '\0';       //clear the buff
        }
   flushBuffers();
   if (currentDevice == 0) {
-      UV3A.write('\r');
-      UV3A.flush();
-      UV3A.print(cmd);
+      Serial3.write('\r');
+      Serial3.flush();
+      Serial3.print(cmd);
       delay200();
+#ifdef DEBUG      
+Serial.print("sendReadcmd "); Serial.println(cmd);
+#endif
       } else {
-              UV3B.write('\r');
-              UV3B.flush();
-              UV3B.print(cmd);
+              Serial2.write('\r');
+              Serial2.flush();
+              Serial2.print(cmd);
               delay200();
               }
 }
@@ -134,24 +92,24 @@ void sendReadcmd(char* cmd)
   
  flushBuffers();
  if (currentDevice == 0) {
-     UV3A.write('\r');
-     UV3A.flush();
-     UV3A.print(cmd);
-     UV3A.write(data);
-     UV3A.write('\r');
+     Serial3.write('\r');
+     Serial3.flush();
+     Serial3.print(cmd);
+     Serial3.write(data);
+     Serial3.write('\r');
      delay200();
-     UV3A.print("ST0");
-     UV3A.write('\r');
+     Serial3.print("ST0");
+     Serial3.write('\r');
      delay200();
      } else { 
-             UV3B.write('\r');
-             UV3B.flush();
-             UV3B.print(cmd);
-             UV3B.write(data);
-             UV3B.write('\r');
+             Serial2.write('\r');
+             Serial2.flush();
+             Serial2.print(cmd);
+             Serial2.write(data);
+             Serial2.write('\r');
              delay200();
-             UV3B.print("ST0");
-             UV3B.write('\r');
+             Serial2.print("ST0");
+             Serial2.write('\r');
              delay200();
              }
 }
@@ -166,18 +124,18 @@ void sendReadcmd(char* cmd)
   
  flushBuffers();
  if (currentDevice == 0) {
-     UV3A.write('\r');
-     UV3A.flush();
-     UV3A.print(cmd);
-     UV3A.print(data);
-     UV3A.write('\r');
+     Serial3.write('\r');
+     Serial3.flush();
+     Serial3.print(cmd);
+     Serial3.print(data);
+     Serial3.write('\r');
      delay200();
      } else { 
-             UV3B.write('\r');
-             UV3B.flush();
-             UV3B.print(cmd);
-             UV3B.print(data);
-             UV3B.write('\r');
+             Serial2.write('\r');
+             Serial2.flush();
+             Serial2.print(cmd);
+             Serial2.print(data);
+             Serial2.write('\r');
              delay200();
              }
 }

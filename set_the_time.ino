@@ -54,7 +54,7 @@ void settheTime()
                                           lcd.print(myMin);
                                           lcd.print(":");
                                } else if (timeFldswitch == 3) {      // is second being confirmed
-                                          mySec = timeCtr;           // save the ctr in second/
+                                         mySec = timeCtr;           // save the ctr in second/
                                           timeCtr = 1;               // reset the ctr for the next field
                                           lcd.setCursor(7, 1);       // print second
                                           if (mySec < 10) {
@@ -63,6 +63,7 @@ void settheTime()
                                           lcd.print(mySec);
                                           lcd.print("   ");
                                } else if (timeFldswitch == 4) {      // is month being confirmed
+
                                           myMonth = timeCtr;           // save the ctr in month
                                           timeCtr = 1;               // reset the ctr for the next field
                                           lcd.setCursor(10, 1);       // print month
@@ -83,21 +84,17 @@ void settheTime()
                                } else if (timeFldswitch == 6) {      // is day being confirmed
                                           myYr = timeCtr;           // save the ctr in year
                                           lcd.setCursor(16, 1);       // print year
-                                          lcd.print(myYr,DEC);
+                                          lcd.print(myYr);
                                           lcd.setCursor(0, 4);
                                           lcd.print("Time updated       ");
                                           delay2k();
-                                          time_t t = processSyncMessage();
-                                          myYr = myYr - 2000;
-                          // This sets the system time (NOT the Teensy RTC Clock)
+//                                          time_t t = processSyncMessage();
+                                   //       myYr = myYr - 2000;
+                          // This sets the system time 
                           // set your seperated date/time variables out as normal and update system time FIRST
                           //setTime(hour(), minute(), second(), day(), month(), year())
                                           setTime(myHr, myMin, mySec, myDay, myMonth, myYr);
-
-                          // now lets set the RTC in teensy before exiting.
-                          // now we can use the system time to update the Teensy's RTC bits
-                          // This sets the Teensy RTC Clock from Arduino Time library(system time) - epoch stylee, just like it wants :)
-                                           Teensy3Clock.set(now());
+                                          RTC.set(now());
                                            lcd.clear();
                                            menuSwitch = 1;
                                            break;
