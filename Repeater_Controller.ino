@@ -1,7 +1,7 @@
 /*********************************************************************
  * UV-RS3 Repeater Controller
  * We invest time and resources providing this open source code, 
-  please support us and open-source hardware by purchasing 
+  please support them and open-source hardware by purchasing 
   products from HobbyPCB!
 
   Written by Martin Boroff WD9GYM.  
@@ -29,11 +29,9 @@
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
 #include <Time.h>
-#include <DS1307RTC.h>
-//#include <SoftwareSerial.h>
 #include <stdint.h>
 #include <EEPROM.h>
-
+#include <DS3231.h>
 #define BUZZER 12.
 
 #define FANPIN      11
@@ -43,21 +41,45 @@
 /***********************************
  * Time 
 ************************************/
-tmElements_t tm;
-const char *monthName[12] = {
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-};
+DS3231  rtc(SDA, SCL);
+
+Time t; // structure for time
+
+int daysInmonth[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 
-/*********************************************************
- *   Valid pins for serial software ATMEGA2560
-* RX: 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), 
-* A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), 
-* A14 (68), A15 (69). 
-*********************************************************/
-//SoftwareSerial UV3A(52, 53); // RX, TX
-//SoftwareSerial UV3B(50, 51); // RX, TX
+char   janStr[]  = "Jan";
+char   febStr[]  = "Feb";
+char   marStr[]  = "Mar";
+char   aprStr[]  = "Apr";
+char   mayStr[]  = "May";
+char   junStr[]  = "Jun";
+char   julStr[]  = "Jul";
+char   augStr[]  = "Aug";
+char   sepStr[]  = "Sep";
+char   octStr[]  = "Oct";
+char   novStr[]  = "Nov";
+char   decStr[]  = "Dec"; 
+
+char*  monthStrs[] = { janStr, febStr, marStr, aprStr, mayStr, junStr,
+                                          julStr, augStr, sepStr, octStr, novStr, decStr}; 
+
+
+int utcOffset = 1;
+int localOffset = 1; 
+int myMonth = 0, myMonthDay = 0, myYear = 0;     // used for setDate
+int myHour = 0, myMinute = 0, mySecond = 0;      // used for setTime
+int prevSecond = 0;
+int localHour;
+
+char wrkMonth[4] = "   ";                        // temp work values
+char wrkMonthday[3] = "  ";
+char wrkYear[5] = "    ";
+char wrkHour[3] = " ";
+char wrkMinute[3] = "  ";
+char wrkSecond[3] = "  ";
+int workMonth, workDay, workYear, workHour;
+
 
 /*******************************************
  *           LCD definitions
@@ -101,10 +123,8 @@ int freqSwitch = 0, CTCCSswitch = 0;
 int fanAddr = 2;
 int keyIndex = 0;
 int keySwitch = 0;
-unsigned int myHr,myMin,mySec,myDay,myMonth,myYr;
 int inputCtr = 0, CTCCSctr = 1;
 int menuSwitch = 0,  menuSelect = 1, currentDevice = 0;
-int prevSecond = 99;
 int radioCTCCSi;
 int repeaterAddr = 2;
 int fanEnabled = relayOn, repeaterEnabled = relayOn;
@@ -230,8 +250,9 @@ void setup(){
   Serial3.begin(19200);
   Serial2.begin(19200);
 
-    // Set the clock to run-mode
-
+/**********************************
+ * LCD start
+***********************************/
   lcd.begin(20,4);         // initialize the lcd for 20 chars 4 lines, turn on backlight
   lcd.setBacklight(15);
   lcd.clear();
@@ -240,7 +261,7 @@ void setup(){
   lcd.setCursor(0, 1);
   lcd.print("Repeater Controller");
   lcd.setCursor(0,2);
-  lcd.print("10/14/2015  Rel 1.0");
+  lcd.print("10/21/2015  Rel 1.0");
   delay(3000);
  
 
@@ -284,64 +305,27 @@ Serial.print("Startup repeaterEnabled = "); Serial.println(repeaterEnabled);
           digitalWrite(REPEATERPIN, HIGH);  // turn the relay off
   }
 
-  delay(1000);
-  
+  delay(500);
+ lcd.clear();  
+ 
   getConfiginfo();
-  lcd.clear();  
   getFreq();
   printFreq();
-   
+ 
+  rtc.begin();
   
-   if (timeStatus()!= timeSet) {
-#ifdef DEBUGTIME
-    lcd.print("Unable to sync RTC");
-    Serial.println("Unable to sync with the RTC");
-    delay2k();
-#endif
-    } else {
-#ifdef DEBUGTIME
-    Serial.println("RTC has set the system time");
-    lcd.print("RTC set the sys time");
-    delay2k();
-#endif
-  }
+  t = rtc.getTime();                // get the time  
+#ifdef DEBUG
+   Serial.println(rtc.getDateStr(FORMAT_SHORT, FORMAT_MIDDLEENDIAN, '/'));
+#endif   
+  // that are connected to the SPI bus do not hold drive bus
+  // The following lines can be uncommented to set the date and time
+//  rtc.setDOW(TUESDAY);     // Set Day-of-Week to SUNDAY
+//  rtc.setTime(23, 29, 0);     // Set the time to 12:00:00 (24hr format)
+//  rtc.setDate(20, 10, 2015);   // Set the date to January 1st, 2014
+  
 
-  bool parse=false;
-  bool config=false;
-
-  // get the date and time the compiler was run
-  if (getDate(__DATE__) && getTime(__TIME__)) {
-    parse = true;
-    // and configure the RTC with this info
-    if (RTC.write(tm)) {
-      config = true;
-    }
-  }
-
-  if (parse && config) {
-#ifdef DEBUG    
-    Serial.print("DS1307 configured Time=");
-    Serial.print(__TIME__);
-    Serial.print(", Date=");
-    Serial.println(__DATE__);
-#endif
-  } else if (parse) {
-#ifdef DEBUG    
-    Serial.println("DS1307 Communication Error :-{");
-    Serial.println("Please check your circuitry");
-#endif    
-  } else {
-#ifdef DEBUG    
-    Serial.print("Could not parse info from the compiler, Time=\"");
-    Serial.print(__TIME__);
-    Serial.print("\", Date=\"");
-    Serial.print(__DATE__);
-    Serial.println("\"");
-#endif    
-  }
-
-
-
+  
 #ifdef DEBUG  
 Serial.println("end of setup");  
 #endif
@@ -351,12 +335,19 @@ Serial.println("end of setup");
  *       Loop
 *************************************/
 void loop(){
- if (RTC.read(tm)) {
-  if (prevSecond != tm.Second) {        // if a new second display new time
-      prevSecond = tm.Second; 
-      digitalClockDisplay();
-  }
- }
+
+ t = rtc.getTime();                // get the time
+  myMonth = t.mon;
+  myMonthDay = t.date;
+  myYear = t.year;
+  myHour = t.hour;
+  myMinute = t.min;
+  mySecond = t.sec;                 // get the second
+// Serial.println(rtc.getTimeStr());
+  if (prevSecond != mySecond) {
+      prevSecond = mySecond;
+      DisplayDateAndTime();
+  }  
    key = keypad.getKey();      // see if a key has been pressed
 
 /******************************  
@@ -391,81 +382,5 @@ Serial.print("currentDevice = "); Serial.println(currentDevice);Serial.print("re
 }
 
 
-
-/****************************************
- * Clock routine
-****************************************/
-void digitalClockDisplay() {
-  // digital clock display of the time
-#ifdef DEBUGTIME
-  Serial.print(tm.Hour);
-  printDigits(tm.Minute);
-  printDigits(tm.Second);
-  Serial.print(" ");
-  Serial.print(tm.Day);
-  Serial.print(" ");
-  Serial.print(tm.Month);
-  Serial.print(" ");
-  Serial.print(tmYearToCalendar(tm.Year)); 
-  Serial.println();
-#endif 
-  lcd.setCursor(0, 3);           // Time displayed on line 4
-  if (tm.Hour < 10) {
-     lcd.print("0");
-  }
-  lcd.print(tm.Hour);
-  lcd.print(":");
-  if (tm.Minute < 10) {
-    lcd.print("0");
-  }
-  lcd.print(tm.Minute);
-  lcd.print(":");
-  if (tm.Second < 10) {
-    lcd.print("0");
-  }
-  lcd.print(tm.Second);
-  lcd.print("  ");
-  if (tm.Month < 10) {
-     lcd.print("0");
-  }
-  lcd.print(tm.Month);
-  lcd.print("/");
-  if (tm.Day < 10) {
-     lcd.print("0");
-  }
-  lcd.print(tm.Day);
-  lcd.print("/");
-  lcd.print(tmYearToCalendar(tm.Year));
-  
-}
-
-
-bool getTime(const char *str)
-{
-  int Hour, Min, Sec;
-
-  if (sscanf(str, "%d:%d:%d", &Hour, &Min, &Sec) != 3) return false;
-  tm.Hour = Hour;
-  tm.Minute = Min;
-  tm.Second = Sec;
-  return true;
-}
-
-bool getDate(const char *str)
-{
-  char Month[12];
-  int Day, Year;
-  uint8_t monthIndex;
-
-  if (sscanf(str, "%s %d %d", Month, &Day, &Year) != 3) return false;
-  for (monthIndex = 0; monthIndex < 12; monthIndex++) {
-    if (strcmp(Month, monthName[monthIndex]) == 0) break;
-  }
-  if (monthIndex >= 12) return false;
-  tm.Day = Day;
-  tm.Month = monthIndex + 1;
-  tm.Year = CalendarYrToTm(Year);
-  return true;
-}
 
 

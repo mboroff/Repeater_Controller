@@ -1,6 +1,8 @@
 /******************************************
  * Set the time - scroll through the values 
  * and let user accept the next entry
+ * Clock is set in 24 Hr format but displayed
+ * in 12 Hr format
 ******************************************/
 
 void settheTime()
@@ -10,15 +12,18 @@ void settheTime()
 #endif 
   lcd.clear();                               // cear the diaplay
   lcd.setCursor(0, 0);
-  lcd.print("Set Clock");                   // print the title
+  lcd.print("Set Clock - Use 24HR");                   // print the title
   lcd.setCursor(0, 3);
   lcd.print("Press A or B");               // print the prompt
-  myHr = 1;                                // initialize the time defaults
-  myMin = 1;
-  mySec = 1;
+int myMonth = 0, myMonthDay = 0, myYear = 0;     // used for setDate
+int myHour = 0, myMinute = 0, mySecond = 0;      // used for setTime
+
+  myHour = 1;                                // initialize the time defaults
+  myMinute = 1;
+  mySecond = 1;
   myMonth = 1;
-  myDay = 1;
-  myYr = 2015;
+  myMonthDay = 1;
+  myYear = 2015;
   menuSwitch = 0;                            // ensure the loop runs
   timeFldswitch = 0;                         // initialize counters used in loop
   timeCtr = 1;
@@ -36,31 +41,31 @@ void settheTime()
                 } else if (key == '*') {            // confirmation key
                            timeFldswitch++;               // bump the switch used to know which field is being updated
                            if (timeFldswitch == 1) {            // is it hour that was confirmed
-                               myHr = timeCtr;                   // save the ctr in hour
+                               myHour = timeCtr;                   // save the ctr in hour
                                timeCtr = 1;                      // reset the counter for the next field
                                lcd.setCursor(1, 1);              // print hour
-                               if (myHr < 10) {
+                               if (myHour < 10) {
                                    lcd.print("0");
                                    }
-                               lcd.print(myHr);    
+                               lcd.print(myHour);    
                                lcd.print(":");                     // print the colon
                                } else if (timeFldswitch == 2) {      // is it minute that was confirmed
-                                          myMin = timeCtr;           // save the ctr in minute
+                                          myMinute = timeCtr;           // save the ctr in minute
                                           timeCtr = 1;              // rest the ctr for the next field
                                           lcd.setCursor(4, 1);      // print minute
-                                          if (myMin < 10) {
+                                          if (myMinute < 10) {
                                               lcd.print("0");
                                               }
-                                          lcd.print(myMin);
+                                          lcd.print(myMinute);
                                           lcd.print(":");
                                } else if (timeFldswitch == 3) {      // is second being confirmed
-                                         mySec = timeCtr;           // save the ctr in second/
+                                         mySecond = timeCtr;           // save the ctr in second/
                                           timeCtr = 1;               // reset the ctr for the next field
                                           lcd.setCursor(7, 1);       // print second
-                                          if (mySec < 10) {
+                                          if (mySecond < 10) {
                                               lcd.print("0");
                                               }
-                                          lcd.print(mySec);
+                                          lcd.print(mySecond);
                                           lcd.print("   ");
                                } else if (timeFldswitch == 4) {      // is month being confirmed
 
@@ -73,28 +78,25 @@ void settheTime()
                                           lcd.print(myMonth);
                                           lcd.print("/");
                                } else if (timeFldswitch == 5) {      // is day being confirmed
-                                          myDay = timeCtr;           // save the ctr in day
+                                          myMonthDay = timeCtr;           // save the ctr in day
                                           timeCtr = 2015;               // reset the ctr for the next field
                                           lcd.setCursor(13, 1);       // print day
-                                          if (myDay < 10) {
+                                          if (myMonthDay < 10) {
                                               lcd.print("0");
                                               }
-                                          lcd.print(myDay);
+                                          lcd.print(myMonthDay);
                                           lcd.print("/   ");
                                } else if (timeFldswitch == 6) {      // is day being confirmed
-                                          myYr = timeCtr;           // save the ctr in year
+                                          myYear = timeCtr;           // save the ctr in year
                                           lcd.setCursor(16, 1);       // print year
-                                          lcd.print(myYr);
+                                          lcd.print(myYear);
                                           lcd.setCursor(0, 4);
                                           lcd.print("Time updated       ");
                                           delay2k();
-//                                          time_t t = processSyncMessage();
-                                   //       myYr = myYr - 2000;
                           // This sets the system time 
                           // set your seperated date/time variables out as normal and update system time FIRST
-                          //setTime(hour(), minute(), second(), day(), month(), year())
-                                          setTime(myHr, myMin, mySec, myDay, myMonth, myYr);
-                                          RTC.set(now());
+                                          rtc.setTime(myHour, myMinute, mySecond); 
+                                          rtc.setDate(myMonthDay, myMonth, myYear);
                                            lcd.clear();
                                            menuSwitch = 1;
                                            break;
