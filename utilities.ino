@@ -2,6 +2,52 @@
  *  general functions 
 ***********************************/
 
+/******************************
+ * get_UV3buff
+ */
+byte get_UV3buff(){
+#ifdef DEBUG
+Serial.println("get_VU3buff");
+#endif
+  for (int i= 0; i < 32; i++) {
+       UV3buff[i] = '\0';
+  }
+  byte k = 0;
+  long T = millis() + 100;
+  char c = 0;
+ if (currentDevice == 0) {  
+  while ((millis() < T) && (c != '\r')){
+    if(Serial3.available()){
+      c = Serial3.read();
+      UV3buff[k++] = c;
+      if (c == '\r') UV3buff[--k] = 0;
+    }
+  }
+ } else {
+  while ((millis() < T) && (c != '\r')){
+    if(Serial2.available()){
+      c = Serial2.read();
+#ifdef DEBUGC      
+Serial.println(c);
+#endif
+      UV3buff[k++] = c;
+      if (c == '\r') UV3buff[--k] = 0;
+    }
+  }
+ }
+#ifdef DEBUG 
+Serial.print("UV3buff = "); Serial.println(UV3buff);
+#endif
+  if (c == 13){
+    return 1;
+  }
+  return 0;
+}
+
+/*************************
+ * bEEP
+ */
+
 void beep()
 {
      tone(BUZZER, 700, 100);
