@@ -12,18 +12,54 @@ void settheTime()
 #endif 
   lcd.clear();                               // cear the diaplay
   lcd.setCursor(0, 0);
-  lcd.print("Set Clock - Use 24HR");                   // print the title
+  lcd.print("Set Clock Time Zone");                   // print the title
+  lcd.setCursor(0, 1);
+  lcd.print("A = East B = Central");               // print the prompt
+  lcd.setCursor(0, 2);
+  lcd.print("C = Mountain");               // print the prompt
+  lcd.setCursor(0, 3);
+  lcd.print("D = West  ");               // print the prompt
+
+  menuSwitch = 0;                            // ensure the loop runs
+   while (menuSwitch == 0){
+        key = keypad.getKey();               // see if a key has been pressed
+        if (key) {
+            if (buzzerEnabled == true){
+                beep();                    
+                }
+            if (key == '#') {               // cancel key
+                lcd.clear();
+                menuSwitch = 1;
+                break;
+                } else if (key == 'A') {           //   East time zone = 5
+                           utcOffset = 5;
+                           localOffset = 5;
+                           break;
+                } else if (key == 'B' ) {          //   Centrl time zone = 6
+                           utcOffset = 6;
+                           localOffset = 6;
+                           break;
+                } else if (key == 'C' ) {          //   Mountain time = 7
+                           utcOffset = 7;
+                           localOffset = 7;
+                           break;
+                } else if (key == 'D' ) {          //   Western time zone = 8
+                           utcOffset = 8;
+                           localOffset = 8;
+                           break;
+
+          }
+      }
+  }
+
+
+
+
+  lcd.clear();                               // cear the diaplay
+  lcd.setCursor(0, 0);
+  lcd.print("Set Clock - Set UTC");                   // print the title
   lcd.setCursor(0, 3);
   lcd.print("Press A or B");               // print the prompt
-int myMonth = 0, myMonthDay = 0, myYear = 0;     // used for setDate
-int myHour = 0, myMinute = 0, mySecond = 0;      // used for setTime
-
-  myHour = 1;                                // initialize the time defaults
-  myMinute = 1;
-  mySecond = 1;
-  myMonth = 1;
-  myMonthDay = 1;
-  myYear = 2015;
   menuSwitch = 0;                            // ensure the loop runs
   timeFldswitch = 0;                         // initialize counters used in loop
   timeCtr = 1;
@@ -102,7 +138,7 @@ int myHour = 0, myMinute = 0, mySecond = 0;      // used for setTime
                                            break;
                                            } 
                   printTimefld();            
-                  } else if (key == 'A' ) {              // increment CTCCS value
+                  } else if (key == 'A' ) {              // increment Time value
                              timeCtr++;
                              if (timeFldswitch == 0) {   // working on hour
                                  if (timeCtr > 23) {
@@ -122,7 +158,7 @@ int myHour = 0, myMinute = 0, mySecond = 0;      // used for setTime
                                             }
                              }
                              printTimefld();
-                } else if (key == 'B' ) {              // decrement CTCCS value
+                } else if (key == 'B' ) {              // decrement Time value
                            timeCtr--;
                            if (timeFldswitch == 0) {                    // working hour
                                if (timeCtr < 0) {
