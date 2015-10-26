@@ -53,7 +53,9 @@ void settheTime()
   }
 
 
-
+EEPROM.write(utcoffsetAddr, utcOffset);
+EEPROM.write(localoffsetAddr, localOffset);                  
+         
 
   lcd.clear();                               // cear the diaplay
   lcd.setCursor(0, 0);

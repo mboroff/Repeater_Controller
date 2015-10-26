@@ -119,14 +119,17 @@ Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 int bufferIndex = 0;
 int buzzerAddr = 0; /** the current address in the EEPROM (i.e. which byte we're going to write to next) **/
 int deviceAddr = 1;
-int freqSwitch = 0, CTCCSswitch = 0;
 int fanAddr = 2;
+int repeaterAddr = 3;
+int utcoffsetAddr = 4;
+int localoffsetAddr = 5;
+
+int freqSwitch = 0, CTCCSswitch = 0;
 int keyIndex = 0;
 int keySwitch = 0;
 int inputCtr = 0, CTCCSctr = 1;
 int menuSwitch = 0,  menuSelect = 1, currentDevice = 0;
 int radioCTCCSi;
-int repeaterAddr = 2;
 int fanEnabled = relayOn, repeaterEnabled = relayOn;
 int returnCode;
 int squelchValue;
@@ -324,8 +327,9 @@ Serial.print("Startup repeaterEnabled = "); Serial.println(repeaterEnabled);
 //  rtc.setTime(23, 29, 0);     // Set the time to 12:00:00 (24hr format)
 //  rtc.setDate(20, 10, 2015);   // Set the date to January 1st, 2014
   
+ utcOffset = EEPROM.read(utcoffsetAddr);
+ localOffset = EEPROM.read(localoffsetAddr);
 
-  
 #ifdef DEBUG  
 Serial.println("end of setup");  
 #endif
