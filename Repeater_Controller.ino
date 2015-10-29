@@ -163,11 +163,11 @@ boolean repeaterSwitch = true, buzzerEnabled = true;
 
 boolean SQ_OP = false;
 
-#define TWOMUPPERFREQUENCYLIMIT      148000L  // Upper band edge
+#define TWOMUPPERFREQUENCYLIMIT      147999L  // Upper band edge
 #define TWOMLOWERFREQUENCYLIMIT      144000L  // Lower band edge
-#define TWOTWENTYUPPERFREQUENCYLIMIT 225000L  // Upper band edge
+#define TWOTWENTYUPPERFREQUENCYLIMIT 224999L  // Upper band edge
 #define TWOTWENTYLOWERFREQUENCYLIMIT 222000L  // Lower band edge
-#define FOURFORTYUPPERFREQUENCYLIMIT 450000L  // Upper band edge
+#define FOURFORTYUPPERFREQUENCYLIMIT 449999L  // Upper band edge
 #define FOURFORTYLOWERFREQUENCYLIMIT 420000L  // Lower band edge
 #define FREQINBAND        0               // Used with range checking
 #define FREQOUTOFBAND     1
@@ -302,7 +302,7 @@ Serial.print("Startup fanEnabled = "); Serial.println(fanEnabled);
 #ifdef DEBUG  
 Serial.print("Startup repeaterEnabled = "); Serial.println(repeaterEnabled);
 #endif
-  if (fanEnabled == relayOn) {
+  if (repeaterEnabled == relayOn) {
       digitalWrite(REPEATERPIN, LOW);   // turn the relay on   
   } else {
           digitalWrite(REPEATERPIN, HIGH);  // turn the relay off
