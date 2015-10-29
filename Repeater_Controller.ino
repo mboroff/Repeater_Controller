@@ -364,6 +364,9 @@ void loop(){
         }
     if (key == '*') {               // Did user activate function menu
         mainMenu();               // process the menu request
+        lcd.clear();
+        getConfiginfo();
+        getFreq();
         printFreq();
         }
 
