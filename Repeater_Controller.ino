@@ -375,6 +375,7 @@ void loop(){
         EEPROM.write(deviceAddr, currentDevice);
 Serial.print("currentDevice = "); Serial.println(currentDevice);Serial.print("repeaterEnabled = "); Serial.println(repeaterEnabled);        
         getConfiginfo();
+        getFreq();
         printFreq();
         }
     else if (key == 'B') {               // Did user change/refresh device
@@ -382,6 +383,7 @@ Serial.print("currentDevice = "); Serial.println(currentDevice);Serial.print("re
         EEPROM.write(deviceAddr, currentDevice);
 Serial.print("currentDevice = "); Serial.println(currentDevice);Serial.print("repeaterEnabled = "); Serial.println(repeaterEnabled);
         getConfiginfo();
+        getFreq();
         printFreq();
         }
   }
