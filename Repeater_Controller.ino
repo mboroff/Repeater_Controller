@@ -264,7 +264,7 @@ void setup(){
   lcd.setCursor(0, 1);
   lcd.print("Repeater Controller");
   lcd.setCursor(0,2);
-  lcd.print("10/21/2015  Rel 1.0");
+  lcd.print("11/14/2015  Rel 1.0");
   delay(3000);
  
 

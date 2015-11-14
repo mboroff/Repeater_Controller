@@ -115,9 +115,15 @@ void sendVolume()
 #ifdef DEBUG
   Serial.println("send Volume");
 #endif  
-
+   if (volumeCtr > 9) {
    sendStorecmd("VU", UV3volume);
-
+   } else {
+     char tempVol[3];
+     tempVol[0] = '0';
+     tempVol[1] = UV3volume[0];
+     tempVol[2] = '\0';
+     sendStorecmd("VU", tempVol);
+   }
    lcd.setCursor(0, 3);
    lcd.print("Volume Saved");
    delay2k();
