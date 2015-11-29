@@ -4,17 +4,20 @@
 
 void toggleBeep()
 {
+#ifdef DEBUG
+  Serial.println)functionLabels[menuSelect-1]);
+#endif    
   lcd.clear();                   // draw the screen option
   lcd.setCursor(0, 0);
-  lcd.print("Beep ON/OFF");
+  lcd.print(functionLabels[menuSelect-1]);   // print the function title
   lcd.setCursor(0, 3);
-  lcd.print("Press A to toggle");
+  lcd.print(txtPressAtoToggle);
   lcd.setCursor(0, 2);
-  lcd.print("Beep = ");
+  lcd.print(F("Beep = "));
   if (buzzerEnabled == true) {
-      lcd.print("ON ");
+      lcd.print(txtOn);
       } else {
-        lcd.print("OFF");
+        lcd.print(txtOff);
       }
   
   menuSwitch = 0;                    // make sure loop continues until save or cancel
@@ -22,27 +25,27 @@ void toggleBeep()
       lcd.setCursor(7, 2);
       key = keypad.getKey();               // see if a key has been pressed
       if (key) {
-          if (buzzerEnabled == true){
+          if (buzzerEnabled == true){        // check if buzzer should buzz
               beep();                    
               }
-          if (key == '#') {               // cancel key
+          if (key == txtHashTag) {               // cancel key
               lcd.clear();
               menuSwitch = 1;
               break;
               }
-          else if (key == '*') {            // confirmation key
-                  EEPROM.write(buzzerAddr, buzzerEnabled);
+          else if (key == txtStar) {            // confirmation key
+                  EEPROM.write(buzzerAddr, buzzerEnabled);     // save the status in EEPROM
                   lcd.setCursor(0, 3);
                   if (buzzerEnabled == true) {
-                      lcd.print("Beep ON saved      ");
+                      lcd.print(F("Beep ON saved      "));
                       } else {
-                              lcd.print("Beep OFF saved    ");
+                              lcd.print(F("Beep OFF saved    "));
                               }
                   menuSwitch = 1;
                   delay2k();
                   break;
                   }
-          else if (key == 'A' ) {              // toggle key
+          else if (key == txtA) {              // toggle key
                    if (buzzerEnabled == true){
                        buzzerEnabled = false;                    
                        }
@@ -53,9 +56,9 @@ void toggleBeep()
 
                    lcd.setCursor(7, 2);
                    if (buzzerEnabled == true) {
-                       lcd.print("ON ");
+                       lcd.print(txtOn);
                    } else {
-                           lcd.print("OFF");
+                           lcd.print(txtOff);
                            }
               }     //end off A
         }      // end of key

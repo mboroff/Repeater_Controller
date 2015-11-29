@@ -11,12 +11,12 @@
 void settheVolume()
 {
 #ifdef DEBUG
-  Serial.println("Enter Volume menu");
+  Serial.println(functionLabels[menuSelect-1]);
 #endif
   lcd.clear();                               // cear the diaplay
   lcd.setCursor(0, 0);
-  lcd.print("Set Volume");
-
+  lcd.print(functionLabels[menuSelect-1]);    // print the function title
+  getVolume();
   printVolume();                              // print the current CTCCS setting
   menuSwitch = 0;                            // esure the loop runs
 
@@ -24,41 +24,41 @@ void settheVolume()
 
       key = keypad.getKey();               // see if a key has been pressed
       if (key) {
-          if (buzzerEnabled == true){
+          if (buzzerEnabled == true){        // check if buzzer should buzz
               beep();                    
               }
-          if (key == '#') {               // cancel key
+          if (key == txtHashTag) {               // cancel key
               lcd.clear();
               menuSwitch = 1;
               break;
               }
-          else if (key == '*') {            // confirmation key
+          else if (key == txtStar) {            // confirmation key
                   sendVolume();
                   lcd.clear();
                   menuSwitch = 1;
                   break;
                   }
-          else if (key == 'A' ) {              // increment CTCCS value
+          else if (key == txtA) {              // increment volume value
                    volumeCtr = atoi(UV3volume);
 #ifdef DEBUG
 Serial.print("volume ctr = "); Serial.println(volumeCtr);
 #endif
                    volumeCtr++;
-                   if (volumeCtr > 39) {
+                   if (volumeCtr > 39) {    // max value
                        volumeCtr = 1;
                        }
                    volumeStr = String(volumeCtr);
                    volumeStr.toCharArray(UV3volume, 3);
 #ifdef DEBUG
-Serial.print("volume str = "); Serial.println(volumeStr);
-Serial.print("UV3volume = "); Serial.println(UV3volume);
+Serial.print(F("volume str = ")); Serial.println(volumeStr);
+Serial.print(F("UV3volume = ")); Serial.println(UV3volume);
 #endif
                    printVolume();   
                 }
-          else if (key == 'B' ) {              // decrement CTCCS value
+          else if (key == txtB) {              // decrement volume value
                    volumeCtr = atoi(UV3volume);
                    volumeCtr--;
-                   if (volumeCtr < 1) {
+                   if (volumeCtr < 1) {        // min value
                        volumeCtr = 39;
                        }
                    volumeStr = String(volumeCtr);
@@ -77,15 +77,15 @@ Serial.print("UV3volume = "); Serial.println(UV3volume);
 void printVolume()
 {
    lcd.setCursor(0,2);                       // position the cursor
-   lcd.print("Volume = ");
+   lcd.print(F("Volume = "));
 #ifdef DEBUG
-Serial.print("UV3volume = "); Serial.println(UV3volume);
+Serial.print(F("volumeCtr = ")); Serial.println(volumeCtr);
 #endif
 
-   lcd.print(UV3volume);       // print the volume variable
-   lcd.print(" ");
+   lcd.print(volumeCtr);       // print the volume variable
+   lcd.print(txtSpaceOne);
    lcd.setCursor(0, 3);
-   lcd.print("Press A or B");
+   lcd.print(txtAorB);
 }
 /*************************************
  *      get the current Volume 
@@ -94,7 +94,7 @@ Serial.print("UV3volume = "); Serial.println(UV3volume);
 void getVolume()
 {
 #ifdef DEBUG
- Serial.println("get volume");
+ Serial.println(F("get volume"));
 #endif  
   sendReadcmd("VU?\r");
   get_UV3buff();
@@ -102,8 +102,9 @@ void getVolume()
   for (int i= 0; i <2; i++) {
        UV3volume[i] = UV3buff[i + 4];
       }
+  volumeCtr = atoi(UV3volume);
 #ifdef DEBUG  
-  Serial.print("volume = "); Serial.println(UV3volume);
+  Serial.print(F("volume = ")); Serial.println(UV3volume);
 #endif  
 }
 
@@ -113,19 +114,19 @@ void getVolume()
 void sendVolume()
 {
 #ifdef DEBUG
-  Serial.println("send Volume");
+  Serial.println(F("send Volume"));
 #endif  
    if (volumeCtr > 9) {
    sendStorecmd("VU", UV3volume);
    } else {
      char tempVol[3];
-     tempVol[0] = '0';
+     tempVol[0] = txtZero[0];
      tempVol[1] = UV3volume[0];
-     tempVol[2] = '\0';
+     tempVol[2] = txtNull;
      sendStorecmd("VU", tempVol);
    }
    lcd.setCursor(0, 3);
-   lcd.print("Volume Saved");
+   lcd.print(F("Volume Saved"));
    delay2k();
 
 }

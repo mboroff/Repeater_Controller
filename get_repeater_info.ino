@@ -6,12 +6,14 @@
 
 void get_repeater_info()
 {
-
+#ifdef DEBUG
+Serial.println(functionLabels[menuSelect-1]);
+#endif
   sendReadcmd("AF?\r");
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Audio LPF");
+  lcd.print(F("Audio LPF"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -20,9 +22,9 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Arduino In Pin");
+  lcd.print(F("Arduino In Pin"));
   lcd.setCursor(0, 1);
-  lcd.print("Function");
+  lcd.print(txtFunction);               // "Function"
   lcd.setCursor(0, 2);
   lcd.print(UV3buff);
   delay2k();
@@ -31,9 +33,9 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Arduino Output Pin");
+  lcd.print(F("Arduino Output Pin"));
   lcd.setCursor(0, 1);
-  lcd.print("Function");
+  lcd.print(txtFunction);
   lcd.setCursor(0, 2);
   lcd.print(UV3buff);
   delay2k();
@@ -42,7 +44,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Arduino USB Speed");
+  lcd.print(F("Arduino USB Speed"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -51,9 +53,9 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("I/O Connector Serial");
+  lcd.print(F("I/O Connector Serial"));
   lcd.setCursor(0, 1);
-  lcd.print("Baud Rate");
+  lcd.print(F("Baud Rate"));
   lcd.setCursor(0, 2);
   lcd.print(UV3buff);
   delay2k();
@@ -62,7 +64,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Beacon Message");
+  lcd.print(F("Beacon Message"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -71,7 +73,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Beacon Timer");
+  lcd.print(F("Beacon Timer"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -80,7 +82,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("CW Audio Freq");
+  lcd.print(F("CW Audio Freq"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -89,7 +91,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("CW Call Sign");
+  lcd.print(F("CW Call Sign"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -98,7 +100,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("CW Speed");
+  lcd.print(F("CW Speed"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -107,7 +109,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("DTMF Tone Duration");
+  lcd.print(F("DTMF Tone Duration"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -116,7 +118,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Pre-emphasis State");
+  lcd.print(F("Pre-emphasis State"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -125,7 +127,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("DTMF Detector State");
+  lcd.print(F("DTMF Detector State"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -134,7 +136,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("E-pin state ");
+  lcd.print(F("E-pin state "));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -148,7 +150,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Firmware Version");
+  lcd.print(F("Firmware Version"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -157,7 +159,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Mic Gain");
+  lcd.print(F("Mic Gain"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -166,7 +168,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("CW/DTMF Tone Gain");
+  lcd.print(F("CW/DTMF Tone Gain"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -175,7 +177,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("HangTime");
+  lcd.print(F("HangTime"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -184,7 +186,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("CW ID Timer");
+  lcd.print(F("CW ID Timer"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -193,7 +195,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Power Down State");
+  lcd.print(F("Power Down State"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -202,7 +204,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("TX Power Level");
+  lcd.print(F("TX Power Level"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -211,7 +213,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Side Tone State");
+  lcd.print(F("Side Tone State"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -220,7 +222,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Squelch State");
+  lcd.print(F("Squelch State"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -229,7 +231,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Squelch Level");
+  lcd.print(F("Squelch Level"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -238,7 +240,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("CTCCS Tone Freq");
+  lcd.print(F("CTCCS Tone Freq"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -247,9 +249,9 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("TX Time Out CW");
+  lcd.print(F("TX Time Out CW"));
   lcd.setCursor(0, 1);
-  lcd.print("Message");
+  lcd.print(F("Message"));
   lcd.setCursor(0, 2);
   lcd.print(UV3buff);
   delay2k();
@@ -258,7 +260,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Tone Squelch Mode");
+  lcd.print(F("Tone Squelch Mode"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -267,7 +269,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("TX Time Out Timer");
+  lcd.print(F("TX Time Out Timer"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -276,7 +278,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("PCB Temperature");
+  lcd.print(F("PCB Temperature"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -285,7 +287,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Operating Voltage");
+  lcd.print(F("Operating Voltage"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();
@@ -294,7 +296,7 @@ void get_repeater_info()
   get_UV3buff();
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Volume");
+  lcd.print(F("Volume"));
   lcd.setCursor(0, 1);
   lcd.print(UV3buff);
   delay2k();

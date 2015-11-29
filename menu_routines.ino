@@ -9,12 +9,12 @@ void mainMenu()
 {
   lcd.clear();
   lcd.setCursor(0, 0);      // line 1 col 8
-  lcd.print("Function Selection");
+  lcd.print(F("Function Selection"));      // print the function title
   lcd.setCursor(0, 2);
-  lcd.print("Enter Fn ");
+  lcd.print(F("Enter Fn "));
   menuSwitch = 0;                    // ensure while loop runs
   for (int i = 0; i < 2; i++){       // clear enough input field
-       inputFld[i] = '\0';
+       inputFld[i] = txtNull;
        }
         
   printMenuselect();  
@@ -24,37 +24,37 @@ void mainMenu()
         str.toCharArray(inputFld,2); //passing the value of the string to the character array   
         key = keypad.getKey();      // see if a key has been pressed
         if (key) {
-            if (buzzerEnabled == true){
+            if (buzzerEnabled == true){        // check if buzzer should buzz
                 beep();                    
                 }
            printMenuselect();       
-           if (key == '#') {      // exit key
+           if (key == txtHashTag) {      // exit key
                lcd.clear();            // clear the lcd
                menuSwitch = 1;        // ensure stop while loop compare and main menu returns to loop
                break;
                }
-               else if (key == '*' ) {     // user confirmed
+               else if (key == txtStar ) {     // user confirmed with a * key
                     processMenu();
                     lcd.clear();
                     break;
                     }
-              else if (key == 'A') {              // increment function number
+              else if (key == txtA) {              // increment function number
                        menuSelect++;                // bump the menu number
                        if (menuSelect > MAXFUNCTIONS) {
                            menuSelect = 1;
                            }             
                        printMenuselect();
-                       }  else if (key == 'B') {           // decrement function number
+                       }  else if (key == txtB) {           // decrement function number
                                    menuSelect--;    
                                    if (menuSelect < 1) {
                                        menuSelect = MAXFUNCTIONS;
                                        }
                                     printMenuselect()  ;
-                       }  else if (key == 'C') {           // decrement function number
-                       }  else if (key == 'D') {           // decrement function number
+                       }  else if (key == txtC) {           // do nothing if it is a C
+                       }  else if (key == txtD) {           // do nothing if it is a D
                        }  else {
                                 if (inputCtr < 10) {           // check if enter 1st digit
-                                    lcd.print("  ");
+                                    lcd.print(txtSpaceTwo);
                                     lcd.setCursor(9, 2);
                                     } else {
                                             inputCtr = 0;
@@ -68,10 +68,10 @@ void mainMenu()
                                         lcd.print(menuSelect);
                                         menuSelect = 1;
                                         lcd.setCursor(0, 3);
-                                        lcd.print("Invalid selection");
+                                        lcd.print(F("Invalid selection"));
                                         delay2k();
                                         lcd.setCursor(0, 3);
-                                        lcd.print("                 ");
+                                        lcd.print(txtSpace20);
                                     }
                                     printMenuselect();    
                                     inputCtr++;
@@ -92,7 +92,7 @@ void printMenuselect()
   lcd.setCursor(0, 1);
   lcd.print(functionLabels[menuSelect - 1]);
   lcd.setCursor(9, 2);
-  lcd.print("  ");
+  lcd.print(txtSpaceTwo);
   lcd.setCursor(9, 2);
   lcd.print(menuSelect);
   lcd.setCursor(9, 2);
@@ -168,6 +168,22 @@ void processMenu()
           xmitCallsign();
           break;
           
+          case 15:           //   Set Hang Time 
+          SetHangTime();
+          break;
+
+          case 16:          //   Set ID Time
+          SetIDtime();
+          break;
+          
+          case 17:          //   display temp history
+          displayTemphistory();
+          break;
+
+          case 18:          //   Reset Arduino
+          eraseEEPROM();
+          break;
+
          default:
            break;   
   

@@ -9,15 +9,15 @@
 void setToneMode()
 {
 #ifdef DEBUGTM
-  Serial.println("Enter set tone mode");
+  Serial.println(functionLabels[menuSelect-1]);
 #endif
   lcd.clear();                               // cear the diaplay
   lcd.setCursor(0, 0);
-  lcd.print("Tone Sqlch Mode");
+  lcd.print(functionLabels[menuSelect-1]);       // print the function title
   getTonemode();
   printTonemode();
   lcd.setCursor(0, 3);
-  lcd.print("Enter 0 - 2");
+  lcd.print(txtZerDashTwo);
   menuSwitch = 0;                            // esure the loop runs
 
   while (menuSwitch == 0){
@@ -25,36 +25,36 @@ void setToneMode()
       key = keypad.getKey();               // see if a key has been pressed
       if (key) {
 
-          if (buzzerEnabled == true){
+          if (buzzerEnabled == true){        // check if buzzer should buzz
               beep();                    
               }
  
-          if (key == '#') {               // cancel key
+          if (key == txtHashTag) {               // cancel key
               lcd.clear();
               menuSwitch = 1;
               break;
               }
-          else if (key == '*') {            // confirmation key
+          else if (key == txtStar) {            // confirmation key
                   sendTonemode();
                   lcd.clear();
                   menuSwitch = 1;
                   break;
                   }
-          else if (key == '0' || key == '1' || key == '2') {
+          else if (key == txtZero[0] || key == '1' || key == '2') {  // only valid choices
                    toneMode[0] = key;
-                   toneMode[1] = '\0';
+                   toneMode[1] = txtNull;
                    lcd.setCursor(12, 2);
                    lcd.print(key);
                    }  else {         
                             lcd.setCursor(12, 2);
                             lcd.print(key);
                             lcd.setCursor(0, 3);
-                            lcd.print("Invalid tone value");
+                            lcd.print(F("Invalid tone value"));
                             delay2k();
                             lcd.setCursor(0, 3);
-                            lcd.print("                  ");
+                            lcd.print(txtSpace20);
                             lcd.setCursor(0, 3);
-                            lcd.print("Enter 0 - 2");
+                            lcd.print(txtZerDashTwo);
                             }
       }
   }
@@ -66,7 +66,7 @@ void setToneMode()
 void printTonemode()
 {
    lcd.setCursor(0,2);                       // position the cursor
-   lcd.print("Tone Mode = ");
+   lcd.print(F("Tone Mode = "));
    lcd.print(toneMode);       // print the table entry
 }
 /*************************************
@@ -76,13 +76,13 @@ void printTonemode()
 void getTonemode()
 {
 #ifdef DEBUGTM
- Serial.println("Getting tone mode");
+ Serial.println(F("Getting tone mode"));
 #endif  
   sendReadcmd("TM?\r");
   get_UV3buff();
   toneMode[0] =  UV3buff[4];
 #ifdef DEBUGTM
-Serial.print("tone mode = "); Serial.println(toneMode);
+Serial.print(F("tone mode = ")); Serial.println(toneMode);
 #endif
 }
 
@@ -92,16 +92,16 @@ Serial.print("tone mode = "); Serial.println(toneMode);
 void sendTonemode()
 {
 #ifdef DEBUGTM
-   Serial.println("===================================");
-   Serial.println("Send tone mode");
-   Serial.print("toneMode = "); Serial.println(toneMode[0]);
+   Serial.println(F("==================================="));
+   Serial.println(F("Send tone mode"));
+   Serial.print(F("toneMode = ")); Serial.println(toneMode[0]);
 #endif  
 
    sendStorecmd("TM", toneMode);
    lcd.setCursor(0, 3);
-   lcd.print("Tone Mode Saved    ");
+   lcd.print(F("Tone Mode Saved    "));
 #ifdef DEBUGTM
-Serial.println("Tone mode saved");
+Serial.println(F("Tone mode saved"));
 Serial.println("===================================");
 #endif   
    getTonemode();

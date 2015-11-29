@@ -8,42 +8,42 @@
 void settheTime()
 {
 #ifdef DEBUG
- Serial.println("enter set the time menu");
+ Serial.println(functionLabels[menuSelect-1]);
 #endif 
   lcd.clear();                               // cear the diaplay
   lcd.setCursor(0, 0);
-  lcd.print("Set Clock Time Zone");                   // print the title
+  lcd.print(F("Set Clock Time Zone"));                   // print the title
   lcd.setCursor(0, 1);
-  lcd.print("A = East B = Central");               // print the prompt
+  lcd.print(F("A = East B = Central"));               // print the prompt
   lcd.setCursor(0, 2);
-  lcd.print("C = Mountain");               // print the prompt
+  lcd.print(F("C = Mountain"));               // print the prompt
   lcd.setCursor(0, 3);
-  lcd.print("D = West  ");               // print the prompt
+  lcd.print(F("D = West  "));               // print the prompt
 
   menuSwitch = 0;                            // ensure the loop runs
    while (menuSwitch == 0){
         key = keypad.getKey();               // see if a key has been pressed
         if (key) {
-            if (buzzerEnabled == true){
+            if (buzzerEnabled == true){        // check if buzzer should buzz
                 beep();                    
                 }
-            if (key == '#') {               // cancel key
+            if (key == txtHashTag) {               // cancel key
                 lcd.clear();
                 menuSwitch = 1;
                 break;
-                } else if (key == 'A') {           //   East time zone = 5
+                } else if (key == txtA) {           //   East time zone = 5
                            utcOffset = 5;
                            localOffset = 5;
                            break;
-                } else if (key == 'B' ) {          //   Centrl time zone = 6
+                } else if (key == txtB) {          //   Centrl time zone = 6
                            utcOffset = 6;
                            localOffset = 6;
                            break;
-                } else if (key == 'C' ) {          //   Mountain time = 7
+                } else if (key == txtC) {          //   Mountain time = 7
                            utcOffset = 7;
                            localOffset = 7;
                            break;
-                } else if (key == 'D' ) {          //   Western time zone = 8
+                } else if (key == txtD) {          //   Western time zone = 8
                            utcOffset = 8;
                            localOffset = 8;
                            break;
@@ -56,12 +56,14 @@ void settheTime()
 EEPROM.write(utcoffsetAddr, utcOffset);
 EEPROM.write(localoffsetAddr, localOffset);                  
          
-
-  lcd.clear();                               // cear the diaplay
+/***************************************
+ * this routine will present each uinit of the time and date. 1st hour then minute then second.....
+ */
+  lcd.clear();                               // clear the diaplay
   lcd.setCursor(0, 0);
-  lcd.print("Set Clock - Set UTC");                   // print the title
+  lcd.print(functionLabels[menuSelect-1]);                   // print the title
   lcd.setCursor(0, 3);
-  lcd.print("Press A or B");               // print the prompt
+  lcd.print(txtAorB);               // print the prompt
   menuSwitch = 0;                            // ensure the loop runs
   timeFldswitch = 0;                         // initialize counters used in loop
   timeCtr = 1;
@@ -72,64 +74,64 @@ EEPROM.write(localoffsetAddr, localOffset);
             if (buzzerEnabled == true){
                 beep();                    
                 }
-            if (key == '#') {               // cancel key
+            if (key == txtHashTag) {               // cancel key
                 lcd.clear();
                 menuSwitch = 1;
                 break;
-                } else if (key == '*') {            // confirmation key
+                } else if (key == txtStar) {            // confirmation key
                            timeFldswitch++;               // bump the switch used to know which field is being updated
                            if (timeFldswitch == 1) {            // is it hour that was confirmed
                                myHour = timeCtr;                   // save the ctr in hour
                                timeCtr = 1;                      // reset the counter for the next field
                                lcd.setCursor(1, 1);              // print hour
                                if (myHour < 10) {
-                                   lcd.print("0");
+                                   lcd.print(txtZero);
                                    }
                                lcd.print(myHour);    
-                               lcd.print(":");                     // print the colon
+                               lcd.print(txtColon);                     // print the colon
                                } else if (timeFldswitch == 2) {      // is it minute that was confirmed
                                           myMinute = timeCtr;           // save the ctr in minute
                                           timeCtr = 1;              // rest the ctr for the next field
                                           lcd.setCursor(4, 1);      // print minute
                                           if (myMinute < 10) {
-                                              lcd.print("0");
+                                              lcd.print(txtZero);
                                               }
                                           lcd.print(myMinute);
-                                          lcd.print(":");
+                                          lcd.print(txtColon);
                                } else if (timeFldswitch == 3) {      // is second being confirmed
                                          mySecond = timeCtr;           // save the ctr in second/
                                           timeCtr = 1;               // reset the ctr for the next field
                                           lcd.setCursor(7, 1);       // print second
                                           if (mySecond < 10) {
-                                              lcd.print("0");
+                                              lcd.print(txtZero);
                                               }
                                           lcd.print(mySecond);
-                                          lcd.print("   ");
+                                          lcd.print(txtSpaceThree);
                                } else if (timeFldswitch == 4) {      // is month being confirmed
 
                                           myMonth = timeCtr;           // save the ctr in month
                                           timeCtr = 1;               // reset the ctr for the next field
                                           lcd.setCursor(10, 1);       // print month
                                           if (myMonth < 10) {
-                                              lcd.print("0");
+                                              lcd.print(txtZero);
                                               }
                                           lcd.print(myMonth);
-                                          lcd.print("/");
+                                          lcd.print(txtSlash);
                                } else if (timeFldswitch == 5) {      // is day being confirmed
                                           myMonthDay = timeCtr;           // save the ctr in day
                                           timeCtr = 2015;               // reset the ctr for the next field
                                           lcd.setCursor(13, 1);       // print day
                                           if (myMonthDay < 10) {
-                                              lcd.print("0");
+                                              lcd.print(txtZero);
                                               }
                                           lcd.print(myMonthDay);
-                                          lcd.print("/   ");
+                                          lcd.print(F("/   "));
                                } else if (timeFldswitch == 6) {      // is day being confirmed
                                           myYear = timeCtr;           // save the ctr in year
                                           lcd.setCursor(16, 1);       // print year
                                           lcd.print(myYear);
                                           lcd.setCursor(0, 4);
-                                          lcd.print("Time updated       ");
+                                          lcd.print(F("Time updated       "));
                                           delay2k();
                           // This sets the system time 
                           // set your seperated date/time variables out as normal and update system time FIRST
@@ -140,7 +142,7 @@ EEPROM.write(localoffsetAddr, localOffset);
                                            break;
                                            } 
                   printTimefld();            
-                  } else if (key == 'A' ) {              // increment Time value
+                  } else if (key == txtA) {              // increment Time value
                              timeCtr++;
                              if (timeFldswitch == 0) {   // working on hour
                                  if (timeCtr > 23) {
@@ -160,7 +162,7 @@ EEPROM.write(localoffsetAddr, localOffset);
                                             }
                              }
                              printTimefld();
-                } else if (key == 'B' ) {              // decrement Time value
+                } else if (key == txtB) {              // decrement Time value
                            timeCtr--;
                            if (timeFldswitch == 0) {                    // working hour
                                if (timeCtr < 0) {
@@ -192,49 +194,49 @@ EEPROM.write(localoffsetAddr, localOffset);
 void printTimefld()
 {
 
-  lcd.setCursor(0, 2);
+  lcd.setCursor(0, 2);              // print each unit being worked upon on line 3 
   if (timeFldswitch == 0) {
-      lcd.print("Hour = ");
+      lcd.print(F("Hour = "));
       if (timeCtr < 10) {
-          lcd.print("0");
+          lcd.print(txtZero);
       }
       lcd.print(timeCtr);
-      lcd.print("          ");
+      lcd.print(txtSpaceTen);
   } else if (timeFldswitch == 1) {
-             lcd.print("Minute = ");
+             lcd.print(F("Minute = "));
              if (timeCtr < 10) {
-                 lcd.print("0");
+                 lcd.print(txtZero);
                  }
              lcd.print(timeCtr);
-             lcd.print("          ");    
+             lcd.print(txtSpaceTen);    
   } else if (timeFldswitch == 2) {
-             lcd.print("Second = ");
+             lcd.print(F("Second = "));
              if (timeCtr < 10) {
-                 lcd.print("0");
+                 lcd.print(txtZero);
                  }
               lcd.print(timeCtr);
-              lcd.print("          ");    
+              lcd.print(txtSpaceTen);    
   } else if (timeFldswitch == 3) {
-             lcd.print("Month = ");
+             lcd.print(F("Month = "));
              if (timeCtr < 10) {
-                 lcd.print("0");
+                 lcd.print(txtZero);
                  }
               lcd.print(timeCtr);
-              lcd.print("          ");    
+              lcd.print(txtSpaceTen);    
   } else if (timeFldswitch == 4) {
-             lcd.print("Day = ");
+             lcd.print(F("Day = "));
              if (timeCtr < 10) {
-                 lcd.print("0");
+                 lcd.print(txtZero);
                  }
               lcd.print(timeCtr);
-              lcd.print("          ");    
+              lcd.print(txtSpaceTen);    
   } else if (timeFldswitch == 5) {
-             lcd.print("Year = ");
+             lcd.print(F("Year = "));
              if (timeCtr < 10) {
-                 lcd.print("0");
+                 lcd.print(txtZero);
                  }
               lcd.print(timeCtr);
-              lcd.print("          ");    
+              lcd.print(txtSpaceTen);    
               }
 }             
 

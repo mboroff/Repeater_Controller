@@ -9,7 +9,7 @@ void DisplayDateAndTime()
  
   lcd.setCursor(0, 3);
     // Get time
-   localHour = myHour - utcOffset;  
+   localHour = myHour - utcOffset;  // set the local hour
   
   //   the adjustment following is for DST good till 2099
   
@@ -28,7 +28,7 @@ void DisplayDateAndTime()
   if (localHour < 0) {
       localHour = localHour +24;
   }
-  workHour = localHour;            // print local time
+  workHour = localHour;            // print local time not UTC time
   
   if (workHour == 0) {                 // adjust hour for 12 hour format
       workHour = 12;
@@ -37,27 +37,27 @@ void DisplayDateAndTime()
       workHour = workHour - 12;
   }
   if (workHour < 10) {
-      lcd.print("0");
+      lcd.print(txtZero);
   }
   lcd.print(workHour);
-  lcd.print(":");
+  lcd.print(txtColon);
   if (myMinute < 10) {
-      lcd.print("0");
+      lcd.print(txtZero);
   }
-  lcd.print(myMinute);
-  lcd.print(":");
+  lcd.print(myMinute);                // print minute
+  lcd.print(txtColon);
   if (mySecond < 10) {
-      lcd.print("0");
+      lcd.print(txtZero);
   }
-  lcd.print(mySecond);
+  lcd.print(mySecond);              // print second
   lcd.print(" ");
    
 
-   workYear = myYear;
+   workYear = myYear;            // need to check for leapyear
   if (checkLeapYear(myYear)) {
       daysInmonth[1] = 29;
   }
-  workMonth = myMonth;
+  workMonth = myMonth;              /// get ready to print date and adjust if UTC is on next day
   workDay = myMonthDay;
   if (localHour > myHour) {       // UTC is next day so let us adjust the date
       workDay = myMonthDay - 1;     //    display to previous day put in leap year later
@@ -70,15 +70,15 @@ void DisplayDateAndTime()
       }
       
       if (workMonth < 10) {
-          lcd.print("0");
+          lcd.print(txtZero);
       }
-      lcd.print(workMonth);
-      lcd.print("/");
+      lcd.print(workMonth);        // print month / day / year
+      lcd.print(txtSlash);
       if (workDay < 10) {
-          lcd.print("0");
+          lcd.print(txtZero);
       }
       lcd.print(workDay);
-      lcd.print("/");
+      lcd.print(txtSlash);
       lcd.print(workYear - 2000);
   }
   else {

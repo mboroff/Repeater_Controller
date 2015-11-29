@@ -5,7 +5,7 @@
 void setSquelchlevel()
 {
 #ifdef DEBUG
-Serial.println("Enter Squelch level menu");
+Serial.println(functionLabels[menuSelect-1]);
 #endif
   for(int i = 0; i < 2; i++){     // clear the input field
       inputFld[i] = '/0';
@@ -13,41 +13,41 @@ Serial.println("Enter Squelch level menu");
   inputCtr = 0;
   lcd.clear();                   // draw the screen option
   lcd.setCursor(0, 0);
-  lcd.print("Set Sqlch Level");
+  lcd.print(functionLabels[menuSelect-1]);    // print the function title
   getSquelchlevel();
   lcd.setCursor(0, 2);
-  lcd.print("Squelch = ");
+  lcd.print(F("Squelch = "));
   lcd.print(squelchLevel);
   lcd.setCursor(0, 3);
-  lcd.print("A B or Value"); 
+  lcd.print(F("A B or Value")); 
   
   menuSwitch = 0;
     while(menuSwitch == 0) {
       lcd.setCursor(10, 2);
       key = keypad.getKey();               // see if a key has been pressed
       if (key) {
-          if (buzzerEnabled == true){
+          if (buzzerEnabled == true){        // check if buzzer should buzz
               beep();                    
               }
-          if (key == '#') {               // cancel key
+          if (key == txtHashTag) {               // cancel key
               lcd.clear();
               menuSwitch = 1;
               break;
               }
-          else if (key == '*') {            // confirmation key
+          else if (key == txtStar) {            // confirmation key
                   sendSquelchlevel();              
                   menuSwitch = 1;
                   break;
                   }
-          else if (key == 'A' ) {              // increment squelch value
+          else if (key == txtA) {              // increment squelch value
                    squelchValue++;
-                   if (squelchValue == 10) {
+                   if (squelchValue == 10) { // max value
                        squelchValue = 0;
                       }
                 }
-          else if (key == 'B' ) {              // decrement squelch value
+          else if (key == txtB) {              // decrement squelch value
                    squelchValue--;
-                   if (squelchValue < 0) {
+                   if (squelchValue < 0) {          // min value
                        squelchValue = 9;
                        }
                 }
@@ -67,7 +67,7 @@ Serial.println("Enter Squelch level menu");
 void getSquelchlevel()
 {
 #ifdef DEBUG  
-  Serial.println("Get sql lvl");
+  Serial.println(F("Get sql lvl"));
 #endif
 
   sendReadcmd("SQ?\r");
@@ -81,7 +81,7 @@ void getSquelchlevel()
 void sendSquelchlevel()
 {
 #ifdef DEBUG  
-  Serial.println("Send sql lvl");
+  Serial.println(F("Send sql lvl"));
 #endif
 
    squelchStr = String(squelchValue);
@@ -89,11 +89,11 @@ void sendSquelchlevel()
    sendStorecmd("SQ", squelchLevel);
 
 #ifdef DEBUG
-  Serial.print("Sqlch lvl = "); Serial.println(squelchLevel); 
+  Serial.print(F("Sqlch lvl = ")); Serial.println(squelchLevel); 
 #endif
 
    lcd.setCursor(0, 3);   
-   lcd.print("Squelch Level Saved");
+   lcd.print(F("Squelch Level Saved"));
    delay2k();
 }
 

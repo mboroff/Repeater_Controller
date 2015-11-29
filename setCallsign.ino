@@ -5,80 +5,84 @@
 void SetCallsign()
 {
 #ifdef DEBUG
-Serial.println("Enter set call sign");
+Serial.println(functionLabels[menuSelect-1]);
 #endif
   
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Set Call Sign");
+  lcd.print(functionLabels[menuSelect-1]);       // print the function title
   
   /********************************** scroll through the options *******/
   lcd.setCursor(0, 1);
-  lcd.print("Use keypad like a   ");
+  lcd.print(F("Use keypad like a   "));
   lcd.setCursor(0, 2);
-  lcd.print("phone.    2 = ABC2  ");
+  lcd.print(F("phone.    2 = ABC2  "));
   lcd.setCursor(0, 3);
-  lcd.print("3 = DEF3  4 = GHI4  ");
+  lcd.print(F("3 = DEF3  4 = GHI4  "));
   delay2k();
   lcd.setCursor(0, 1);
-  lcd.print("phone.    2 = ABC2  ");
+  lcd.print(F("phone.    2 = ABC2  "));
   lcd.setCursor(0, 2);
-  lcd.print("3 = DEF3  4 = GHI4  ");
+  lcd.print(F("3 = DEF3  4 = GHI4  "));
   lcd.setCursor(0, 3);
-  lcd.print("5 = JKL5  6 = MNO6  ");
+  lcd.print(F("5 = JKL5  6 = MNO6  "));
   delay500();
   lcd.setCursor(0, 1);
-  lcd.print("3 = DEF3  4 = GHI4  ");
+  lcd.print(F("3 = DEF3  4 = GHI4  "));
   lcd.setCursor(0, 2);
-  lcd.print("5 = JKL5  6 = MNO6  ");
+  lcd.print(F("5 = JKL5  6 = MNO6  "));
   lcd.setCursor(0, 3);
-  lcd.print("7 = PQRS7 8 = TUV8  ");
+  lcd.print(F("7 = PQRS7 8 = TUV8  "));
   delay500();
   lcd.setCursor(0, 1);
-  lcd.print("5 = JKL5  6 = MNO6  ");
+  lcd.print(F("5 = JKL5  6 = MNO6  "));
   lcd.setCursor(0, 2);
-  lcd.print("7 = PQRS7 8 = TUV8  ");
+  lcd.print(F("7 = PQRS7 8 = TUV8  "));
   lcd.setCursor(0, 3);  
-  lcd.print("9 = WXYZ9 A = Next  ");
+  lcd.print(F("9 = WXYZ9 A = Next  "));
   delay500();
   lcd.setCursor(0, 1);
-  lcd.print("7 = PQRS7 8 = TUV8  ");
+  lcd.print(F("7 = PQRS7 8 = TUV8  "));
   lcd.setCursor(0, 2);  
-  lcd.print("9 = WXYZ9 A = Next  ");
+  lcd.print(F("9 = WXYZ9 A = Next  "));
   lcd.setCursor(0, 3);  
-  lcd.print("B = Bksp  C = clear ");
+  lcd.print(F("B = Bksp  C = clear "));
   delay500();
   lcd.setCursor(0, 1);
-  lcd.print("9 = WXYZ9 A = Next  ");
+  lcd.print(F("9 = WXYZ9 A = Next  "));
   lcd.setCursor(0, 2);
-  lcd.print("B = Bksp  C = clear ");
+  lcd.print(F("B = Bksp  C = clear "));
   lcd.setCursor(0, 3);  
-  lcd.print("D = /               ");
+  lcd.print(F("D = /               "));
   delay500();
   lcd.setCursor(0, 1);
-  lcd.print("B = Bksp  C = clear ");
+  lcd.print(F("B = Bksp  C = clear "));
   lcd.setCursor(0, 2);
-  lcd.print("D = /               ");
+  lcd.print(F("D = /               "));
   lcd.setCursor(0, 3);  
-  lcd.print("                    ");
+  lcd.print(txtSpace20);
   delay500();
   lcd.setCursor(0, 1);
-  lcd.print("D = /               ");
+  lcd.print(F("D = /               "));
   lcd.setCursor(0, 2);
-  lcd.print("                    ");
+  lcd.print(txtSpace20);
   delay500();
   lcd.setCursor(0, 1);
-  lcd.print("                    ");
+  lcd.print(txtSpace20);
   delay500();
 
   /************    set up the input screen *****************/
+  getCallsign();
+  lcd.setCursor(0, 1);
+  lcd.print(F("Call sign = "));
+  lcd.print(radioCallsign);
   lcd.setCursor(0, 2);
   for (int i = 0; i < 21; i++){
-       callSignbuffer[i] = '\0';
+       callSignbuffer[i] = txtNull;
        }
   lcd.print(callSignbuffer);
   lcd.setCursor(0, 3);
-  lcd.print("Enter call sign");
+  lcd.print(F("Enter call sign"));
   bufferIndex = 0;
   keyIndex = 0;
   menuSwitch = 0;
@@ -89,32 +93,32 @@ Serial.println("Enter set call sign");
               prevKey = key;
               keyIndex = 0;
               }
-          if (buzzerEnabled == true){
+          if (buzzerEnabled == true){        // check if buzzer should buzz
               beep();                    
               }
-          if (key == '#') {               // cancel key
+          if (key == txtHashTag) {               // cancel key
               lcd.clear();
               menuSwitch = 1;
               break;
               }
-          else if (key == '*') {            // confirmation key
+          else if (key == txtStar) {            // confirmation key
                   menuSwitch = 1;
                   sendStorecmd("CL", callSignbuffer);
                   lcd.setCursor(0, 3);  
-                  lcd.print("Call sign saved     ");
+                  lcd.print(F("Call sign saved     "));
                   delay2k();
                   getCallsign();
                   lcd.clear();
                   lcd.setCursor(0, 0);
                   lcd.setCursor(0, 1);
-                  lcd.print("Call sign now is");
+                  lcd.print(F("Call sign now is"));
                   lcd.setCursor(0, 2);
                   lcd.print(radioCallsign);         
-                  menuSwitch = 1;
+                  menuSwitch = 1;         // end the loop
                   delay2k();
-             break;
+                  break;
                   }
-          else if (key == 'A' ) {                // accept the last key value entered and bump he buffer index
+          else if (key == txtA) {                // accept the last key value entered and bump he buffer index
                    if (keyEntered == true) {
                        keyEntered = false;
                        bufferIndex++;
@@ -124,7 +128,7 @@ Serial.println("Enter set call sign");
                            }
                        } 
                     }
-          else if (key == 'B') {                          // back space delete the current character and decrement the buffer index
+          else if (key == txtB) {                          // back space delete the current character and decrement the buffer index
                    callSignbuffer[bufferIndex] = ' ' ;
                    bufferIndex--;
                    if (bufferIndex < 0){
@@ -134,33 +138,35 @@ Serial.println("Enter set call sign");
                    lcd.setCursor(0, 2); 
                    lcd.print(callSignbuffer);   
                    }
-          else if (key == 'C') {                         // cclear the buffer and reset indexes
+          else if (key == txtC) {                         // clear the buffer and reset indexes
                    bufferIndex = 0;
                    keyIndex = 0;
-                   callSignbuffer[0] ='\0';
-                   callSignbuffer[1] = '\0';
+                   callSignbuffer[0] =txtNull;
+                   callSignbuffer[1] = txtNull;
                    lcd.setCursor(0, 2);
-                   lcd.print("                    ");
+                   lcd.print(txtSpace20);
                    lcd.setCursor(0, 2);
                    }
           else {
-                if (key == 'D') {                     // D is transformed to a slash 
+                if (key == txtD) {                     // D is transformed to a slash 
                     currentKey[0] = '/';
-                    currentKey[1] = '\0';
+                    currentKey[1] = txtNull;
                     callSignbuffer[bufferIndex] = '/';
-                    callSignbuffer[bufferIndex + 1] = '\0';
+                    callSignbuffer[bufferIndex + 1] = txtNull;
+                    keyEntered = true;
                     lcd.setCursor(0, 2);
                     lcd.print(callSignbuffer);
-                } else {                             // numbers 0 - 9 are handled using a table for each key
+                } 
+          else {                             // numbers 0 - 9 are handled using a table for each key
                 currentKey[0] = key;
-                currentKey[1] = '\0';
+                currentKey[1] = txtNull;
                 keySwitch = atoi(currentKey);
-                callSignbuffer[bufferIndex + 1] = '\0';
+                callSignbuffer[bufferIndex + 1] = txtNull;
                 lcd.setCursor(0, 2);
                 keyEntered = true;
                 switch (keySwitch)    {    
                     case 0:
-                       callSignbuffer[bufferIndex] = '0' ;          // zero is only zero
+                       callSignbuffer[bufferIndex] = txtZero[0] ;          // zero is only zero
                        lcd.print(callSignbuffer);
                        break;
                                    
@@ -173,7 +179,7 @@ Serial.println("Enter set call sign");
                        callSignbuffer[bufferIndex] = keyTable2[keyIndex][0] ;   // 2 = A, B, C or 2
                        lcd.print(callSignbuffer);
                        keyIndex++;
-                       if (keyIndex == 4) {
+                       if (keyIndex == 4) {           // max table entry?
                            keyIndex = 0;
                        }
                       break;
@@ -182,7 +188,7 @@ Serial.println("Enter set call sign");
                        callSignbuffer[bufferIndex] = keyTable3[keyIndex][0] ;   // 3 = D E F 3
                        lcd.print(callSignbuffer);
                        keyIndex++;
-                       if (keyIndex == 4) {
+                       if (keyIndex == 4) {           // max table entry?
                            keyIndex = 0;
                        }
                       break;
@@ -191,7 +197,7 @@ Serial.println("Enter set call sign");
                        callSignbuffer[bufferIndex] = keyTable4[keyIndex][0] ;  // 4 = G H I 4
                        lcd.print(callSignbuffer);
                        keyIndex++;
-                       if (keyIndex == 4) {
+                       if (keyIndex == 4) {           // max table entry?
                            keyIndex = 0;
                        }
                       break;
@@ -200,7 +206,7 @@ Serial.println("Enter set call sign");
                        callSignbuffer[bufferIndex] = keyTable5[keyIndex][0] ;    // 5 = J K L 5
                        lcd.print(callSignbuffer);
                        keyIndex++;
-                       if (keyIndex == 4) {
+                       if (keyIndex == 4) {           // max table entry?
                            keyIndex = 0;
                        }
                       break;
@@ -209,7 +215,7 @@ Serial.println("Enter set call sign");
                        callSignbuffer[bufferIndex] = keyTable6[keyIndex][0] ;   // 6 = M N O 6
                        lcd.print(callSignbuffer);
                        keyIndex++;
-                       if (keyIndex == 4) {
+                       if (keyIndex == 4) {           // max table entry?
                            keyIndex = 0;
                        }
                       break;
@@ -218,7 +224,7 @@ Serial.println("Enter set call sign");
                        callSignbuffer[bufferIndex] = keyTable7[keyIndex][0] ;  // 7 = P Q R S 7
                        lcd.print(callSignbuffer);
                        keyIndex++;
-                       if (keyIndex == 5) {
+                       if (keyIndex == 5) {           // max table entry?
                            keyIndex = 0;
                        }
                       break;
@@ -261,16 +267,17 @@ Serial.println("Enter set call sign");
 void getCallsign()
 {
 #ifdef DEBUG  
-  Serial.println("Get call sign");
+  Serial.println(F("Get call sign"));
 #endif
 
  sendReadcmd("CL?\r");
  get_UV3buff();
  for (int i = 0; i < 15; i++) {
-      if (UV3buff[4 + i] == '\r' || UV3buff[4 + i] == '\0' ) {
+      if (UV3buff[4 + i] == '\r' || UV3buff[4 + i] == txtNull ) {
           break;
           }
       radioCallsign[i]= UV3buff[4 + i];
+      radioCallsign[i + 1] = txtNull;
       }
 }
 

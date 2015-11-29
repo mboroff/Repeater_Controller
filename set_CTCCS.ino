@@ -9,15 +9,11 @@
 void setCTCCS()
 {
 #ifdef DEBUG
-  Serial.println("Enter CTCCS menu");
+  Serial.println(functionLabels[menuSelect-1]);
 #endif
   lcd.clear();                               // cear the diaplay
   lcd.setCursor(0, 0);
-  if (CTCCSswitch == 1) {                    // print the function title
-      lcd.print("Set R-CTCSS");
-  } else {
-      lcd.print("Set T-CTCSS");
-  }
+  lcd.print(functionLabels[menuSelect-1]);          // print the function title
   printCTCCS();                              // print the current CTCCS setting
   menuSwitch = 0;                            // esure the loop runs
 
@@ -25,31 +21,31 @@ void setCTCCS()
 
       key = keypad.getKey();               // see if a key has been pressed
       if (key) {
-          if (buzzerEnabled == true){
+          if (buzzerEnabled == true){        // check if buzzer should buzz
               beep();                    
               }
-          if (key == '#') {               // cancel key
+          if (key == txtHashTag) {               // cancel key
               lcd.clear();
               menuSwitch = 1;
               break;
               }
-          else if (key == '*') {            // confirmation key
+          else if (key == txtStar) {            // confirmation key
                   sendCTCCS();
                   lcd.clear();
                   menuSwitch = 1;
                   break;
                   }
-          else if (key == 'A' ) {              // increment CTCCS value
+          else if (key == txtA) {              // increment CTCCS value
                    CTCCSctr++;
-                   if (CTCCSctr > NUMBEROFTONES) {
+                   if (CTCCSctr > NUMBEROFTONES) { // table max
                        CTCCSctr = 1;
                       }
                    printCTCCS();   
                 }
-          else if (key == 'B' ) {              // decrement CTCCS value
+          else if (key == txtB) {              // decrement CTCCS value
                    CTCCSctr--;
                    if (CTCCSctr < 1) {
-                       CTCCSctr = NUMBEROFTONES;
+                       CTCCSctr = NUMBEROFTONES; // table min
                        }
                    printCTCCS();    
                 }
@@ -65,10 +61,10 @@ void setCTCCS()
 void printCTCCS()
 {
    lcd.setCursor(0,2);                       // position the cursor
-   lcd.print("CTCCS = ");
+   lcd.print(F("CTCCS = "));
    lcd.print(CTCSStable[CTCCSctr - 1]);       // print the table entry
    lcd.setCursor(0, 3);
-   lcd.print("Press A or B");
+   lcd.print(txtAorB);
 }
 /*************************************
  *      get the current CTCCS 
@@ -79,7 +75,7 @@ void printCTCCS()
 void getCTCCS()
 {
 #ifdef DEBUG
- Serial.println("get CTCCS");
+ Serial.println(F("get CTCCS"));
 #endif  
 
   sendReadcmd("TF?\r");
@@ -102,7 +98,7 @@ void getCTCCS()
 void sendCTCCS()
 {
 #ifdef DEBUG
-  Serial.println("send CTCCS");
+  Serial.println(F("send CTCCS"));
 #endif  
    radioCTCCSf = atof(CTCSStable[CTCCSctr - 1]) * 100;
    radioCTCCSi = radioCTCCSf;
@@ -110,7 +106,7 @@ void sendCTCCS()
    sendStorecmd("TF", radioCTCCS);
 
    lcd.setCursor(0, 3);
-   lcd.print("CTCCS Freq Saved");
+   lcd.print(F("CTCCS Freq Saved"));
    delay2k();
 }
 
