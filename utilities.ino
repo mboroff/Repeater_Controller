@@ -166,11 +166,12 @@ Serial.print(F("sendReadcmd ")); Serial.println(cmd);
 
 /************************
  *  Send a cmd to RS-UV3 with data
- */
-
+ */ 
  void sendDatacmd(char* cmd, char* data)
 {
+#ifdef DEBUG  
   Serial.println(F("sendDatacmd"));
+#endif
   Serial.print(F("cmd = ")); Serial.println(cmd);
   Serial.print(F("data = ")); Serial.println(data);
   

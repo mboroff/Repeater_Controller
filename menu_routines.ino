@@ -184,6 +184,18 @@ void processMenu()
           eraseEEPROM();
           break;
 
+          case 19:          //   Set Time Out Timer
+          setTimeouttimer();
+          break;
+
+          case 20:          //   toggle transmitter
+          toggleTransmitter();
+          break;
+
+          case 21:         // Toggle DTFM Detect
+          toggleDTFM();
+          break;
+          
          default:
            break;   
   

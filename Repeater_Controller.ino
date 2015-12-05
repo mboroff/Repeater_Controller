@@ -148,7 +148,8 @@ int repeaterAddr = 3;  // switch for repeater relay status
 int utcoffsetAddr = 4; 
 int localoffsetAddr = 5;  // local time offset
 int temperaturesaveAddr = 6; // reserving 48 memory slots for temp - 24 A then 24 B
-int nextAvalableaddress = 55;
+int txstateAddr = 55;   // transmitter state
+int nextAvalableaddress = 57;
 
 int displayHour;
 int freqSwitch = 0, CTCCSswitch = 0;
@@ -159,10 +160,14 @@ int menuSwitch = 0,  menuSelect = 1, currentDevice = 0;
 int radioCTCCSi;
 int fanEnabled = relayOn, repeaterEnabled = relayOn;
 int returnCode;
+int prevtimeOutctr = 0;
 int squelchValue;
 int timeFldswitch = 0;
 int timeCtr = 0;
 int tmCtr = 0;
+int timeOut = 0;
+int timeOutctr = 0;
+int txStatectr = 0;
 int volumeCtr = 0;
 int workTemperature;
 
@@ -171,9 +176,9 @@ float radioCTCCSf;
 char callSignbuffer[21];
 char currentKey[2];
 char dataFld[32];
+char dtfmState[4];
+char dtfmSwitch[2];
 char inputFld[8];
-char tempIDtimer[4];
-char tempHangtimer[5];
 char key;
 char memoryChannel[2];
 char myCallsign[16];
@@ -184,7 +189,11 @@ char radioTemp[4];
 char recvFreq[8], xmitFreq[8], oldFreq[8];
 char squelchLevel[2] = " ";
 char temp[17];
+char tempIDtimer[4];
+char tempHangtimer[5];
+char timeOuttime[4] = "000";
 char toneMode[5];
+char txState[2] = "0";
 char UV3buff[32];
 char UV3volume[3];
 
@@ -226,6 +235,7 @@ const char txtHashTag = '#';
 const char txtSpace20[21] = "                    ";
 const char txtColon[2] = ":";
 const char txtZero[2] = "0";
+const char txtZeroZero[3] = "00";
 const char txtOne[2] = "1";
 const char txtTwo[2] = "2";
 const char txtSlash[2] = "/";
@@ -233,7 +243,7 @@ const char txtAorB[13] = "Press A or B";
 const char txtAorBorC[19] = "Press A or B or C";
 const char txtPressAtoToggle[18] = "Press A to toggle";
 const char txtOn[4] = "ON ";
-const char txtOff[4] = "Off";
+const char txtOff[4] = "OFF";
 const char txtSpaceEqualSpace[4] = " = ";
 const char txtCspace[3] = "C ";
 const char txtRxColonSpace[5] = "RX: ";
@@ -249,7 +259,7 @@ const char txtZerDashTwo[12] = "Enter 0 - 2";
 /***********************************
  *    Function menu titles
 ***********************************/
-#define MAXFUNCTIONS 18
+#define MAXFUNCTIONS 21
 #define MAXITEMSIZE 20
 char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] = 
        { "Set Rx Freq        ", "Set Tx Freq        ", 
@@ -260,7 +270,9 @@ char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] =
          "Display System Info", "Reset RS-UV3       ",
          "Set Call Sign      ", "Transmit Call Sign ",
          "Set Hang Timer     ", "Set ID Timer       ",
-         "Display temp Hist  ", "Erease Arduino Mem "
+         "Display temp Hist  ", "Erease Arduino Mem ",
+         "Set Time Out Timer ", "Toggle Transmitter ",
+         "Toggle DTFM Detect "
          };
 /***********************************
  *      Tones Table
@@ -335,7 +347,7 @@ void setup(){
   lcd.setCursor(0, 1);
   lcd.print("Repeater Controller");
   lcd.setCursor(0,2);
-  lcd.print(F("11/21/2015  Rel 2.0"));
+  lcd.print(F("12/04/2015  Rel 2.0"));
   delay(3000);
  
 
@@ -379,6 +391,10 @@ Serial.print(F("Startup repeaterEnabled = ")); Serial.println(repeaterEnabled);
           digitalWrite(REPEATERPIN, HIGH);  // turn the relay off
   }
 
+   txState[0] = EEPROM.read(txstateAddr);   // read the state of the transmitter
+   txState[1] = '\0';
+   txStatectr = atoi(txState);
+
   delay(500);
  lcd.clear();     // clear the LCD
  
@@ -390,7 +406,6 @@ Serial.print(F("Startup repeaterEnabled = ")); Serial.println(repeaterEnabled);
 /*************************
  *   start the clock
  ***********************/
-
   rtc.begin();  
   t = rtc.getTime();                // get the time  
 #ifdef DEBUG
@@ -416,7 +431,7 @@ Serial.println(F("end of setup"));
  *       Loop
 *************************************/
 void loop(){
-
+  
  t = rtc.getTime();                // get the time
   myMonth = t.mon;
   myMonthDay = t.date;
