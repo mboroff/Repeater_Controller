@@ -270,7 +270,7 @@ char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] =
          "Display System Info", "Reset RS-UV3       ",
          "Set Call Sign      ", "Transmit Call Sign ",
          "Set Hang Timer     ", "Set ID Timer       ",
-         "Display temp Hist  ", "Erease Arduino Mem ",
+         "Display temp Hist  ", "Erase Arduino Mem  ",
          "Set Time Out Timer ", "Toggle Transmitter ",
          "Toggle DTFM Detect "
          };
