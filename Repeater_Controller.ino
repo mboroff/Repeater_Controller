@@ -32,7 +32,11 @@
      16) - Set ID Timer
      17) - Display temp history
      Store the temp each hour
-     18) RESET EEPROM
+     18) - RESET EEPROM
+     19) - Set Time Out Timer 
+     20) - Toggle Transmitter
+     21) - Toggle DTFM Detect "
+
      
  
 *********************************************************************/
@@ -347,7 +351,7 @@ void setup(){
   lcd.setCursor(0, 1);
   lcd.print("Repeater Controller");
   lcd.setCursor(0,2);
-  lcd.print(F("12/04/2015  Rel 2.0"));
+  lcd.print(F("12/14/2015  Rel 2.0"));
   delay(3000);
  
 
