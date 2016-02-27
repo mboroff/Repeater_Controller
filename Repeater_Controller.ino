@@ -30,12 +30,9 @@
      V2 additions
      15) - Set Hang Time
      16) - Set ID Timer
-     17) - Display temp history
-     Store the temp each hour
-     18) - RESET EEPROM
-     19) - Set Time Out Timer 
-     20) - Toggle Transmitter
-     21) - Toggle DTFM Detect "
+     17) - Set Time Out Timer 
+     18) - Toggle Transmitter
+     19) - Toggle DTFM Detect "
 
      
  
