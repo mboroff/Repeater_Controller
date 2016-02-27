@@ -263,7 +263,7 @@ const char txtZerDashTwo[12] = "Enter 0 - 2";
 /***********************************
  *    Function menu titles
 ***********************************/
-#define MAXFUNCTIONS 21
+#define MAXFUNCTIONS 19
 #define MAXITEMSIZE 20
 char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] = 
        { "Set Rx Freq        ", "Set Tx Freq        ", 
@@ -274,7 +274,6 @@ char functionLabels[MAXFUNCTIONS][MAXITEMSIZE] =
          "Display System Info", "Reset RS-UV3       ",
          "Set Call Sign      ", "Transmit Call Sign ",
          "Set Hang Timer     ", "Set ID Timer       ",
-         "Display temp Hist  ", "Erase Arduino Mem  ",
          "Set Time Out Timer ", "Toggle Transmitter ",
          "Toggle DTFM Detect "
          };
@@ -351,7 +350,7 @@ void setup(){
   lcd.setCursor(0, 1);
   lcd.print("Repeater Controller");
   lcd.setCursor(0,2);
-  lcd.print(F("12/14/2015  Rel 2.0"));
+  lcd.print(F("2/27/2016  Rel 2.0"));
   delay(3000);
  
 
@@ -447,14 +446,6 @@ void loop(){
   if (prevSecond != mySecond) {      // check for a new second
       prevSecond = mySecond;
       DisplayDateAndTime();
-      if (prevHour != myHour && tempSave == true) {    // check for a new hour
-          tempSave = false;
-          prevHour = myHour;
-          saveThetemp();
-          }
-       if (prevHour == myHour && tempSave == false) {
-          tempSave = true;   
-       }
   }  
    key = keypad.getKey();      // see if a key has been pressed
 
@@ -500,45 +491,4 @@ Serial.println(repeaterEnabled);
 
 }
 
-/***********************************
- *     saveThetemp
-***********************************/
-
-void saveThetemp()
-{
-#ifdef DEBUG
-   Serial.println(F("save temp"));    
-#endif
-   lcd.setCursor(0, 3);
-   lcd.print(F("Saving temperature"));
-   int tempDevice;
-   tempDevice = currentDevice;     // save the current device because we need to get from both devices
-   currentDevice = 0;
-   getradioTemp();                    // get the temp from device 0
-   workTemperature = atoi(radioTemp);
-
-#ifdef DEBUG
-   Serial.print(F("workTemperature = ")); Serial.println(workTemperature);
-   Serial.print(F("radioTemp = ")); Serial.println(radioTemp);
-   Serial.print(F("localHour = ")); Serial.println(localHour); 
-   Serial.print(F("temperaturesaveAddr = ")); Serial.println(temperaturesaveAddr);
-   Serial.print(F("temperaturesaveAddr + localHour = ")); Serial.println(temperaturesaveAddr + localHour);
-#endif
-   EEPROM.write(temperaturesaveAddr  + localHour, workTemperature);
-   currentDevice = 1;                          // get the temp from device 1
-   getradioTemp();
-   workTemperature = atoi(radioTemp);
-#ifdef DEBUG
-   Serial.print(F("workTemperature = ")); Serial.println(workTemperature);
-   Serial.print(F("radioTemp = ")); Serial.println(radioTemp);
-   Serial.print(F("localHour = ")); Serial.println(localHour); 
-   Serial.print(F("temperaturesaveAddr = ")); Serial.println(temperaturesaveAddr);
-   Serial.print(F("temperaturesaveAddr + 24 + localHour = ")); Serial.println(temperaturesaveAddr + 24 + localHour);
-#endif
-   EEPROM.write(temperaturesaveAddr + 24 + localHour, workTemperature);
-   currentDevice = tempDevice;           // restore the current device number
-   delay(2000);
-   lcd.setCursor(0, 3);
-   lcd.print(txtSpace20);    // blank line   
-}
 

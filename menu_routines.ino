@@ -176,23 +176,15 @@ void processMenu()
           SetIDtime();
           break;
           
-          case 17:          //   display temp history
-          displayTemphistory();
-          break;
-
-          case 18:          //   Reset Arduino
-          eraseEEPROM();
-          break;
-
-          case 19:          //   Set Time Out Timer
+          case 17:          //   Set Time Out Timer
           setTimeouttimer();
           break;
 
-          case 20:          //   toggle transmitter
+          case 18:          //   toggle transmitter
           toggleTransmitter();
           break;
 
-          case 21:         // Toggle DTFM Detect
+          case 19:         // Toggle DTFM Detect
           toggleDTFM();
           break;
           
